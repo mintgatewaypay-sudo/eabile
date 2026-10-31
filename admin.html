@@ -362,17 +362,9 @@ function loadOrders() {
 
 function loadActiveVisitors() {
   if (!AUTHED) return;
-  sbGet("site_visitors", "select=*&order=created_at.desc&limit=200").then(function(data) {
-    if (!data || !data.length) {
-      LAST_VISITORS = [];
-    } else {
-      var cutoff = Date.now() - 300000;
-      var hasLastSeen = data[0].last_seen_at !== undefined && data[0].last_seen_at !== null;
-      LAST_VISITORS = data.filter(function(v) {
-        var t = hasLastSeen ? (v.last_seen_at || v.created_at) : v.created_at;
-        return t && new Date(t).getTime() > cutoff;
-      });
-    }
+  var cutoff = new Date(Date.now() - 60000).toISOString();
+  sbGet("site_visitors", "select=*&created_at=gte." + encodeURIComponent(cutoff) + "&order=created_at.desc").then(function(data) {
+    LAST_VISITORS = data || [];
     document.getElementById("sActive").textContent = LAST_VISITORS.length;
     if (document.getElementById("visitorsModal").classList.contains("open")) {
       renderVisitors(LAST_VISITORS);

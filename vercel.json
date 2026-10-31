@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/((?!assets|favicon.png|etihad_rail_logo.png|etihad_rail_og.png|admin.html).*)", "destination": "/index.html" }
+    { "source": "/((?!assets|favicon.png|etihad_rail_logo.png|etihad_rail_og.png|admin.html|presence.js).*)", "destination": "/index.html" }
   ]
 }
