@@ -1,0 +1,1 @@
+var e=`rail_checkout`;function t(t){sessionStorage.setItem(e,JSON.stringify(t))}function n(){if(typeof window>`u`)return null;try{let t=sessionStorage.getItem(e);return t?JSON.parse(t):null}catch{return null}}export{t as n,n as t};
