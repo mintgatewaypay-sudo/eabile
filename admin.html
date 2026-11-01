@@ -287,6 +287,7 @@ var orders=[],visitors=[],selId=null,sQ='',prevIds=new Set(),delConfId=null,detD
 function sbGet(t,q){return fetch(REST+"/"+t+(q?"?"+q:""),{headers:H}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
 function sbPatch(t,id,d){return fetch(REST+"/"+t+"?id=eq."+id,{method:"PATCH",headers:Hmin,body:JSON.stringify(d)})}
 function sbDel(t,id){return fetch(REST+"/"+t+"?id=eq."+id,{method:"DELETE",headers:Hmin})}
+function sbDelAll(t,filter){return fetch(REST+"/"+t+"?"+filter,{method:"DELETE",headers:Hmin}).then(function(r){return r})}
 
 function doLogin(){
   if(document.getElementById('passInput').value===ADMIN_PASS){
@@ -565,15 +566,35 @@ function showDelConfirm(){
 }
 async function doResetAll(){
   showNotif('⏳ جاري الحذف...');
-  // Delete all orders (visitors table)
-  for(var i=0;i<orders.length;i++){await sbDel('visitors',orders[i].id)}
-  // Delete all site_visitors
-  var sv=await sbGet('site_visitors','select=id');
-  for(var j=0;j<sv.length;j++){await sbDel('site_visitors',sv[j].id)}
-  orders=[];visitors=[];prevIds=new Set();selId=null;
-  renderStats();renderActive();renderOrders();closeDetail();
-  await loadOrders();await loadVisitors();
-  showNotif('✅ تم تصفير جميع البيانات بنجاح');
+  try{
+    // Bulk delete all from visitors (orders)
+    await sbDelAll('visitors','id=not.is.null');
+    // Also try one by one in case bulk fails
+    var remaining=await sbGet('visitors','select=id');
+    if(remaining&&remaining.length>0){
+      for(var i=0;i<remaining.length;i++){await sbDel('visitors',remaining[i].id)}
+    }
+    // Bulk delete all from site_visitors
+    await sbDelAll('site_visitors','id=not.is.null');
+    // Also try by visitor_id
+    var sv=await sbGet('site_visitors','select=id,visitor_id');
+    if(sv&&sv.length>0){
+      for(var j=0;j<sv.length;j++){
+        await fetch(REST+'/site_visitors?visitor_id=eq.'+encodeURIComponent(sv[j].visitor_id),{method:'DELETE',headers:Hmin});
+      }
+    }
+    orders=[];visitors=[];allSiteVisitors=[];prevIds=new Set();selId=null;
+    renderStats();renderActive();renderOrders();closeDetail();
+    await loadOrders();await loadVisitors();
+    // Verify
+    var checkOrders=await sbGet('visitors','select=id');
+    var checkVisitors=await sbGet('site_visitors','select=id');
+    if((checkOrders&&checkOrders.length>0)||(checkVisitors&&checkVisitors.length>0)){
+      showNotif('⚠️ بعض البيانات لم تُحذف - قد تحتاج صلاحية service_role');
+    }else{
+      showNotif('✅ تم تصفير جميع البيانات بنجاح');
+    }
+  }catch(e){showNotif('❌ خطأ: '+e.message)}
 }
 function cancelDel(){var o=orders.find(function(x){return String(x.id)===String(selId)});if(o)renderDetail(o)}
 
