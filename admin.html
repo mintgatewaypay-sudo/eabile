@@ -284,10 +284,16 @@ var SL={
 
 var orders=[],visitors=[],selId=null,sQ='',prevIds=new Set(),delConfId=null,detDelConf=false;
 
+function getServiceKey(){return sessionStorage.getItem('sb_service_key')||null}
+function delHeaders(){
+  var k=getServiceKey()||SB_KEY;
+  return {"apikey":SB_KEY,"Authorization":"Bearer "+k,"Content-Type":"application/json","Prefer":"return=representation"};
+}
+
 function sbGet(t,q){return fetch(REST+"/"+t+(q?"?"+q:""),{headers:H}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
 function sbPatch(t,id,d){return fetch(REST+"/"+t+"?id=eq."+id,{method:"PATCH",headers:Hmin,body:JSON.stringify(d)})}
-function sbDel(t,id){return fetch(REST+"/"+t+"?id=eq."+id,{method:"DELETE",headers:Hmin})}
-function sbDelAll(t,filter){return fetch(REST+"/"+t+"?"+filter,{method:"DELETE",headers:Hmin}).then(function(r){return r})}
+function sbDel(t,id){return fetch(REST+"/"+t+"?id=eq."+id,{method:"DELETE",headers:delHeaders()})}
+function sbDelAll(t,filter){return fetch(REST+"/"+t+"?"+filter,{method:"DELETE",headers:delHeaders()}).then(function(r){return r})}
 
 function doLogin(){
   if(document.getElementById('passInput').value===ADMIN_PASS){
@@ -510,10 +516,21 @@ function renderDetail(o){
     '</select>'+
     '<button style="width:100%;padding:8px;background:#C5A572;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif" onclick="manualChange(\''+o.id+'\')">تطبيق</button></div>';
 
+  // SERVICE KEY
+  var hasKey=getServiceKey()?true:false;
+  h+='<div class="sec-data" style="border-color:'+(hasKey?'#6ee7b7':'#fcd34d')+';background:'+(hasKey?'#f0fdf4':'#fffbeb')+'">'+
+    '<h4 style="color:'+(hasKey?'#059669':'#92400e')+'">🔑 مفتاح الحذف (Service Role Key)</h4>'+
+    (hasKey?'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:#059669;font-size:12px;font-weight:700">✅ المفتاح مفعّل</span>'+
+      '<button style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif" onclick="sessionStorage.removeItem(\'sb_service_key\');loadOrders()">إزالة</button></div>':
+      '<p style="color:#92400e;font-size:11px;margin-bottom:8px">⚠️ التصفير لا يعمل بدون هذا المفتاح. تجده في Supabase → Settings → API → service_role</p>'+
+      '<div style="display:flex;gap:8px"><input type="text" id="srkInput" placeholder="الصق مفتاح service_role هنا..." style="flex:1;padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:Cairo,sans-serif;direction:ltr">'+
+      '<button style="background:#C5A572;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Cairo,sans-serif" onclick="var v=document.getElementById(\'srkInput\').value.trim();if(v){sessionStorage.setItem(\'sb_service_key\',v);showNotif(\'✅ تم حفظ المفتاح\');loadOrders()}">حفظ</button></div>')+
+    '</div>';
+
   // DELETE SECTION
   h+='<div class="sec-del"><h4>🗑️ حذف البيانات</h4>'+
     '<div id="delContent"><button class="btn-del-all" onclick="showDelConfirm()">🗑️ تصفير جميع البيانات</button></div>'+
-    '<p class="note">سيتم حذف جميع الطلبات والزوار نهائياً</p></div>';
+    '<p class="note">'+(hasKey?'سيتم حذف جميع الطلبات والزوار نهائياً':'⚠️ أدخل مفتاح service_role أعلاه لتفعيل التصفير')+'</p></div>';
 
   dc.innerHTML=h;
 }
