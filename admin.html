@@ -234,7 +234,7 @@ html,body{height:100%;overflow:hidden;font-family:'Cairo','Segoe UI',sans-serif;
       <button class="tb-visitors" onclick="openVM()">
         <span>📊</span><span>إجمالي الزوار:</span><span class="num" id="tbV">0</span>
       </button>
-      <span class="tb-online"><span class="dot"></span> الزوار الآن: <strong id="tbO">0</strong></span>
+      <button class="tb-online" onclick="vmFilter='online';openVM()" style="cursor:pointer;border:1px solid #6ee7b7;font-family:'Cairo',sans-serif"><span class="dot"></span> الزوار الآن: <strong id="tbO">0</strong></button>
       <span class="tb-admin">👤 Admin</span>
       <button class="tb-logout" onclick="doLogout()">خروج</button>
     </div>
