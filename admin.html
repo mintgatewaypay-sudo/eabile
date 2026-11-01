@@ -297,7 +297,7 @@ function doLogout(){sessionStorage.removeItem('er_admin');document.getElementByI
 document.getElementById('passInput').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
 function checkAuth(){if(sessionStorage.getItem('er_admin')==='1')showDash()}
 function showDash(){document.getElementById('loginScreen').style.display='none';
-  document.getElementById('layout').style.display='flex';loadOrders();loadVisitors()}
+  document.getElementById('layout').style.display='flex';loadOrders();loadVisitors();loadAllSiteVisitors()}
 
 function playSound(){try{var c=new(window.AudioContext||window.webkitAudioContext),o=c.createOscillator(),g=c.createGain();
   o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.3,c.currentTime);o.type='sine';
@@ -318,25 +318,24 @@ function isDone(o){return DONE.indexOf(o.status)!==-1}
 
 function renderStats(){
   var pending=orders.filter(isPending),done=orders.filter(isDone);
-  var active=orders.filter(function(o){return isPending(o)||isDone(o)});
-  var completed=orders.filter(function(o){return(o.status||'')==='payment_approved'||(o.status||'').indexOf('approved')!==-1});
+  var completed=orders.filter(function(o){return(o.status||'').indexOf('approved')!==-1});
   var cards=[
     {label:'إجمالي العملاء',value:orders.length,color:'#C5A572',bg:'rgba(197,165,114,0.1)',border:'rgba(197,165,114,0.25)',icon:'👥'},
-    {label:'إجمالي الزوار',value:orders.length+visitors.length,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',icon:'📊',click:true,hint:'عرض السجل ↗'},
-    {label:'الزوار الحاليين',value:visitors.length,color:'#22c55e',bg:'rgba(34,197,94,0.1)',border:'rgba(34,197,94,0.25)',icon:'🌐',live:true,click:true,hint:'المتصلين الآن ↗'},
+    {label:'إجمالي الزوار',value:allSiteVisitors.length||visitors.length,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',icon:'📊',click:'all',hint:'عرض السجل ↗'},
+    {label:'الزوار الحاليين',value:visitors.length,color:'#22c55e',bg:'rgba(34,197,94,0.1)',border:'rgba(34,197,94,0.25)',icon:'🌐',live:true,click:'online',hint:'المتصلين الآن ↗'},
     {label:'عملاء نشطين',value:pending.length,color:'#3b82f6',bg:'rgba(59,130,246,0.1)',border:'rgba(59,130,246,0.25)',icon:'⚡',live:true},
     {label:'مكتملين',value:completed.length,color:'#16a34a',bg:'rgba(22,163,74,0.1)',border:'rgba(22,163,74,0.25)',icon:'✅'}
   ];
   document.getElementById('statsRow').innerHTML=cards.map(function(c){
     var cl=c.click?'cursor:pointer':'cursor:default';
-    var onclick=c.click?' onclick="openVM()"':'';
+    var onclick=c.click?' onclick="vmFilter=\''+c.click+'\';openVM()"':'';
     var live=c.live&&c.value>0?'<span class="live" style="background:'+c.color+'"></span>':'';
     var hint=c.hint?'<div class="sc-hint" style="color:'+c.color+'">'+c.hint+'</div>':'';
     return '<div class="sc" style="background:'+c.bg+';border:1px solid '+c.border+';'+cl+'"'+onclick+'>'+
       '<div class="sc-v">'+live+c.icon+' '+c.value+'</div>'+
       '<div class="sc-lb">'+c.label+'</div>'+hint+'</div>';
   }).join('');
-  document.getElementById('tbV').textContent=orders.length;
+  document.getElementById('tbV').textContent=allSiteVisitors.length||visitors.length;
   document.getElementById('tbO').textContent=visitors.length;
   document.getElementById('aCnt').textContent=orders.length;
   document.getElementById('oCnt').textContent=orders.length;
@@ -595,7 +594,9 @@ async function loadOrders(){
 async function loadVisitors(){
   var cutoff=new Date(Date.now()-60000).toISOString();
   var d=await sbGet('site_visitors','select=*&created_at=gte.'+encodeURIComponent(cutoff)+'&order=created_at.desc');
-  visitors=d||[];renderStats();
+  visitors=d||[];
+  loadAllSiteVisitors().then(function(){renderStats()});
+  renderStats();
 }
 
 var vmFilter='all',vmSearch='',allSiteVisitors=[];
