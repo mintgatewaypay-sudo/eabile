@@ -321,7 +321,7 @@ function renderStats(){
   var completed=orders.filter(function(o){return(o.status||'').indexOf('approved')!==-1});
   var cards=[
     {label:'إجمالي العملاء',value:orders.length,color:'#C5A572',bg:'rgba(197,165,114,0.1)',border:'rgba(197,165,114,0.25)',icon:'👥'},
-    {label:'إجمالي الزوار',value:allSiteVisitors.length||visitors.length,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',icon:'📊',click:'all',hint:'عرض السجل ↗'},
+    {label:'إجمالي الزوار',value:visitors.length,color:'#f59e0b',bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',icon:'📊',click:'all',hint:'عرض السجل ↗'},
     {label:'الزوار الحاليين',value:visitors.length,color:'#22c55e',bg:'rgba(34,197,94,0.1)',border:'rgba(34,197,94,0.25)',icon:'🌐',live:true,click:'online',hint:'المتصلين الآن ↗'},
     {label:'عملاء نشطين',value:pending.length,color:'#3b82f6',bg:'rgba(59,130,246,0.1)',border:'rgba(59,130,246,0.25)',icon:'⚡',live:true},
     {label:'مكتملين',value:completed.length,color:'#16a34a',bg:'rgba(22,163,74,0.1)',border:'rgba(22,163,74,0.25)',icon:'✅'}
@@ -335,7 +335,7 @@ function renderStats(){
       '<div class="sc-v">'+live+c.icon+' '+c.value+'</div>'+
       '<div class="sc-lb">'+c.label+'</div>'+hint+'</div>';
   }).join('');
-  document.getElementById('tbV').textContent=allSiteVisitors.length||visitors.length;
+  document.getElementById('tbV').textContent=visitors.length;
   document.getElementById('tbO').textContent=visitors.length;
   document.getElementById('aCnt').textContent=orders.length;
   document.getElementById('oCnt').textContent=orders.length;
@@ -592,10 +592,9 @@ async function loadOrders(){
   if(selId){var o=orders.find(function(x){return String(x.id)===String(selId)});if(o)renderDetail(o);else closeDetail()}
 }
 async function loadVisitors(){
-  var cutoff=new Date(Date.now()-60000).toISOString();
-  var d=await sbGet('site_visitors','select=*&created_at=gte.'+encodeURIComponent(cutoff)+'&order=created_at.desc');
+  var d=await sbGet('site_visitors','select=*&order=created_at.desc');
   visitors=d||[];
-  loadAllSiteVisitors().then(function(){renderStats()});
+  allSiteVisitors=visitors;
   renderStats();
 }
 
@@ -603,6 +602,7 @@ var vmFilter='all',vmSearch='',allSiteVisitors=[];
 async function loadAllSiteVisitors(){
   var d=await sbGet('site_visitors','select=*&order=created_at.desc');
   allSiteVisitors=d||[];
+  visitors=allSiteVisitors;
 }
 
 function openVM(){
